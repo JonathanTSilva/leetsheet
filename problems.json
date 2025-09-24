@@ -1,0 +1,248 @@
+[
+  {
+    "title": "Two Sum",
+    "link": "https://leetcode.com/problems/two-sum/",
+    "keywords": [
+      "#Array",
+      "#HashTable",
+      "#Dictionary",
+      "#OnePass"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "We iterate through the list of N elements exactly once. Each hash table lookup and insertion is an average O(1) operation."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "In the worst-case scenario, we might store all N elements in the hash table if no solution is found until the very end of the array."
+      }
+    },
+    "whiteboard": "The optimal approach uses a hash map (dictionary in Python) for a single-pass solution. As we iterate through the array, we store each number and its index. For each element, we calculate its 'complement' (the other number needed to reach the target) and check if that complement already exists in our hash map. This provides an average O(1) lookup time, making it vastly superior to the brute-force method of using two nested loops, which has a time complexity of O(N^2).",
+    "dry_run": "Example: `nums = [2, 7, 11, 15]`, `target = 9`\n1. Initialize `nums_hash = {}`.\n2. `i = 0`, `num = 2`. Complement is `7`. Is `7` in hash? No. Add `2` to hash: `{2: 0}`.\n3. `i = 1`, `num = 7`. Complement is `2`. Is `2` in hash? Yes. Return `[hash[2], i]`, which is `[0, 1]`.",
+    "test_cases": "- Empty input array.\n- No solution exists in the array.\n- Array with negative numbers.\n- Array with duplicate numbers that form a solution (e.g., `nums=[3,3], target=6`).\n- Target is zero.",
+    "raw_solution": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        nums_hash = {}\n        for i, num in enumerate(nums):\n            complement = target - num\n            if complement in nums_hash:\n                return [nums_hash[complement], i]\n            nums_hash[num] = i",
+    "commented_solution": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        # The hash map stores numbers we've seen and their indices.\n        nums_hash = {}\n        # FORYOU!!: Interviewer might ask why a hash map (dictionary) is used here.\n        # Answer: It provides O(1) average time complexity for lookups, which is crucial for an overall O(N) solution. A simple array search would be O(N), making the total time O(N^2).\n\n        # Iterate through the list with both index and value.\n        for i, num in enumerate(nums):\n            # Calculate the number needed to reach the target.\n            complement = target - num\n\n            # Check if this required complement is already in our hash map.\n            if complement in nums_hash:\n                # If it is, we've found our pair.\n                return [nums_hash[complement], i]\n\n            # If the complement isn't found, add the current number and its index to the map.\n            # We do this *after* the check to handle cases where a number is used twice (e.g., nums=[3,3], target=6)\n            nums_hash[num] = i"
+  },
+  {
+    "title": "Add Two Numbers",
+    "link": "https://leetcode.com/problems/add-two-numbers/",
+    "keywords": [
+      "#LinkedList",
+      "#Math",
+      "#Iteration",
+      "#Carry",
+      "#DummyNode"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(max(M, N))",
+        "justification": "We iterate through the linked lists until both are fully traversed. The number of iterations is determined by the length of the longer list (M or N)."
+      },
+      "space": {
+        "notation": "O(max(M, N))",
+        "justification": "The new linked list created to store the result will have a length of at most max(M, N) + 1, where the +1 accounts for a potential final carry."
+      }
+    },
+    "whiteboard": "The problem requires adding two numbers represented by linked lists in reverse order. The most direct approach is to iterate through both lists simultaneously, simulating elementary school addition. We use a `carry` variable to handle sums greater than 9. A `dummy` head node is used to simplify the construction of the result list, avoiding edge cases for the first node.",
+    "dry_run": "Example: `l1 = 2->4->3`, `l2 = 5->6->4`\n1. Initialize `carry = 0`, `dummy` node.\n2. Iteration 1: `2 + 5 + 0 = 7`. `carry=0`, `val=7`. Result: `dummy->7`.\n3. Iteration 2: `4 + 6 + 0 = 10`. `carry=1`, `val=0`. Result: `dummy->7->0`.\n4. Iteration 3: `3 + 4 + 1 = 8`. `carry=0`, `val=8`. Result: `dummy->7->0->8`.\n5. Loop ends. Return `dummy.next`.",
+    "test_cases": "- One list is longer than the other.\n- Lists of different lengths resulting in a final carry (e.g., `[9,9] + [1]`).\n- One or both lists are empty.\n- Lists containing zeros.",
+    "raw_solution": "# Definition for singly-linked list.\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass Solution:\n    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:\n        dummy = ListNode()\n        cur = dummy\n        carry = 0\n        while l1 or l2 or carry:\n            v1 = l1.val if l1 else 0\n            v2 = l2.val if l2 else 0\n            total = v1 + v2 + carry\n            carry, val = divmod(total, 10)\n            cur.next = ListNode(val)\n            cur = cur.next\n            l1 = l1.next if l1 else None\n            l2 = l2.next if l2 else None\n        return dummy.next",
+    "commented_solution": "# Definition for singly-linked list.\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass Solution:\n    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:\n        # A dummy node helps simplify the code by providing a fake head.\n        dummy = ListNode()\n        cur = dummy\n\n        # This will hold the carry-over value (0 or 1).\n        carry = 0\n\n        # Loop until we have processed both lists and there's no carry left.\n        while l1 or l2 or carry:\n            v1 = l1.val if l1 else 0\n            v2 = l2.val if l2 else 0\n\n            total = v1 + v2 + carry\n            carry, val = divmod(total, 10)\n            \n            cur.next = ListNode(val)\n            cur = cur.next\n\n            l1 = l1.next if l1 else None\n            l2 = l2.next if l2 else None\n\n        return dummy.next"
+  },
+  {
+    "title": "Longest Substring Without Repeating Characters",
+    "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "keywords": [
+      "#String",
+      "#SlidingWindow",
+      "#HashTable",
+      "#Dictionary"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "This is a single-pass sliding window approach. Each character in the string is visited at most twice, once by the right pointer (`i`) and once by the left pointer (`start`)."
+      },
+      "space": {
+        "notation": "O(min(N, M))",
+        "justification": "The space is determined by the hash map size, which stores at most M unique characters (where M is the size of the character set) or N characters if all are unique."
+      }
+    },
+    "whiteboard": "This problem is a classic example of the 'Sliding Window' technique. We use two pointers, `start` and `i`, to define a 'window' of a non-repeating substring. A hash map is used to store the most recent index of each character encountered. When a repeating character is found within the current window, we shrink the window by moving the `start` pointer to the position right after the previous occurrence of that character. This ensures O(N) time complexity as each character is visited at most twice.",
+    "dry_run": "Example: `s = \"abcabcbb\"`\n1. `start = 0`, `chars = {}`, `mx = 0`.\n2. `i=0, char='a'`. Valid. `mx=1`. `chars={'a':0}`.\n3. `i=1, char='b'`. Valid. `mx=2`. `chars={'a':0, 'b':1}`.\n4. `i=2, char='c'`. Valid. `mx=3`. `chars={'a':0, 'b':1, 'c':2}`.\n5. `i=3, char='a'`. Repeat! `chars['a']` is `0`. `start <= 0` is true. Move `start` to `0+1=1`. Update `chars={'a':3, ...}`.",
+    "test_cases": "- Empty string.\n- String with all unique characters.\n- String with all same characters (e.g., 'bbbbb').\n- String with special characters or numbers.",
+    "raw_solution": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        mx = 0\n        start = 0\n        chars = {}\n        for i, char in enumerate(s):\n            if char in chars and start <= chars[char]:\n                start = chars[char] + 1\n            else:\n                mx = max(mx, i - start + 1)\n            chars[char] = i\n        return mx",
+    "commented_solution": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        # `mx` will store the maximum length found so far.\n        mx = 0\n        # `start` is the starting index of our current non-repeating substring.\n        start = 0\n        # `chars` is a dictionary to store the last seen index of each character.\n        chars = {}\n\n        for i, char in enumerate(s):\n            # Check if we've seen this character before AND if its last occurrence is within our current window.\n            if char in chars and start <= chars[char]:\n                # If so, a repeat has occurred. Move the start of our window.\n                start = chars[char] + 1\n            else:\n                # If no repeat, calculate its length and update the max if needed.\n                mx = max(mx, i - start + 1)\n            \n            # Update the last seen index for the current character.\n            chars[char] = i\n            \n        return mx"
+  },
+  {
+    "title": "Median of Two Sorted Arrays",
+    "link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    "keywords": [
+      "#Array",
+      "#BinarySearch",
+      "#DivideAndConquer",
+      "#Hard"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(log(min(N, M)))",
+        "justification": "This complexity is for the optimal solution which performs a binary search. The search space is the smaller of the two arrays, and it is halved in each step."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The optimal solution operates in-place using a few variables to track partitions, requiring no additional space proportional to the input size."
+      }
+    },
+    "whiteboard": "The optimal solution for this problem has a time complexity of O(log(min(N,M))) and uses binary search. The goal is to find a partition in both arrays such that all elements in the 'left part' are smaller than all elements in the 'right part'. By performing a binary search on the smaller array to find this ideal partition, we can determine the median from the boundary elements (max of the left part and min of the right part) without merging the arrays. This is much more efficient than the naive O(N+M) approach of merging and sorting.",
+    "dry_run": "Conceptual Dry Run: Binary search on smaller array `A`. Pick a partition `midA`. Calculate corresponding partition `midB`. Check if `max(leftA) <= min(rightB)` and `max(leftB) <= min(rightA)`. If not, adjust the binary search range in `A` (move left or right) until the condition is met. Once found, calculate median based on the boundary elements and total element count (even/odd).",
+    "test_cases": "- One array is empty.\n- Arrays with no overlap in values (e.g., `[1,2]`, `[3,4]`).\n- Arrays with significant overlap.\n- Arrays of greatly different lengths.\n- Arrays with even or odd total number of elements.",
+    "raw_solution": "import math\n\nclass Solution:\n    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:\n        # This is the straightforward, but non-optimal, solution.\n        arr = sorted(nums1 + nums2)\n        n = len(arr)\n        if n % 2 == 0:\n            mid_right = arr[n // 2]\n            mid_left = arr[n // 2 - 1]\n            return (mid_left + mid_right) / 2\n        else:\n            return float(arr[n // 2])",
+    "commented_solution": "import math\n\nclass Solution:\n    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:\n        # This is the straightforward, \"brute-force\" approach.\n        # NOTE: Interviewers expect the O(log(min(N,M))) solution.\n        arr = sorted(nums1 + nums2)\n        n = len(arr)\n        \n        # Acknowledge this solution's inefficiency in an interview.\n\n        if n % 2 == 0:\n            # If even, the median is the average of the two middle elements.\n            mid_right = arr[n // 2]\n            mid_left = arr[n // 2 - 1]\n            return (mid_left + mid_right) / 2\n        else:\n            # If odd, the median is simply the middle element.\n            return float(arr[n // 2])"
+  },
+  {
+    "title": "Longest Palindromic Substring",
+    "link": "https://leetcode.com/problems/longest-palindromic-substring/",
+    "keywords": [
+      "#String",
+      "#DynamicProgramming",
+      "#ExpandAroundCenter"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N^2)",
+        "justification": "The 'Expand Around Center' approach has 2N-1 potential centers. For each center, we may expand outwards up to N/2 times in the worst case."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "This approach uses a fixed number of variables to store indices, not counting the space for the result string itself, thus requiring constant extra space."
+      }
+    },
+    "whiteboard": "The 'Expand Around Center' technique is an intuitive and efficient way to solve this. It has the same O(N^2) time complexity as the dynamic programming approach but uses O(1) space. The idea is that any palindrome has a center. We iterate through each character of the string, treating it as a potential center, and expand outwards. We must handle two cases for the center: a single character (for odd-length palindromes like 'racecar') and the space between two characters (for even-length palindromes like 'aabbaa').",
+    "dry_run": "Example: `s = \"babad\"`\n1. `res = \"\"`.\n2. Loop `i=0`: `check(0,0)` -> 'b'. `res='b'`. `check(0,1)` -> ''.\n3. Loop `i=1`: `check(1,1)` -> 'bab'. `res='bab'`. `check(1,2)` -> ''.\n4. Loop `i=2`: `check(2,2)` -> 'aba'. `len('aba')` is not > `len('bab')`. `res` remains 'bab'.\n5. Continue for all `i`. Final result is 'bab'.",
+    "test_cases": "- Empty string.\n- String that is already a palindrome.\n- String with no palindrome longer than 1 character.\n- String with multiple palindromes of the same max length.",
+    "raw_solution": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        res = \"\"\n        def check(l, r):\n            while 0 <= l and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return s[l + 1:r]\n\n        for i in range(len(s)):\n            odd_pal = check(i, i)\n            if len(odd_pal) > len(res):\n                res = odd_pal\n            even_pal = check(i, i + 1)\n            if len(even_pal) > len(res):\n                res = even_pal\n        return res",
+    "commented_solution": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        # This will store the longest palindrome found so far.\n        res = \"\"\n\n        # Helper function to perform the expansion.\n        def check(l, r):\n            # Expand as long as pointers are in bounds and characters match.\n            while 0 <= l and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            # Return the valid palindrome found.\n            return s[l + 1:r]\n\n        for i in range(len(s)):\n            # Check for odd length palindromes (center is the character itself).\n            odd_pal = check(i, i)\n            if len(odd_pal) > len(res):\n                res = odd_pal\n\n            # Check for even length palindromes (center is between two characters).\n            even_pal = check(i, i + 1)\n            if len(even_pal) > len(res):\n                res = even_pal\n        \n        return res"
+  },
+  {
+    "title": "ZigZag Conversion",
+    "link": "https://leetcode.com/problems/zigzag-conversion/",
+    "keywords": [
+      "#String",
+      "#Array",
+      "#Simulation"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "We iterate through the input string of length N exactly once to place each character into its respective row."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "We create an auxiliary array of strings to store the characters. The total number of characters stored is equal to the length of the input string, N."
+      }
+    },
+    "whiteboard": "This is a direct simulation problem. The most effective method is to create an array of strings, where each string represents a row. We iterate through the input string character by character, appending each one to the correct row. A pointer indicates the current row, and a direction variable (e.g., +1 for down, -1 for up) controls the movement. The direction flips whenever the pointer reaches the top or bottom row.",
+    "dry_run": "Example: `s = \"PAYPAL\"`, `numRows = 3`\n1. `res = [\"\", \"\", \"\"]`, `row = 0`, `dir = 1`.\n2. 'P' -> `res[0]`. `row=1`.\n3. 'A' -> `res[1]`. `row=2`.\n4. 'Y' -> `res[2]`. At bottom, `dir=-1`. `row=1`.\n5. 'P' -> `res[1]`. `row=0`.\n6. 'A' -> `res[0]`. At top, `dir=1`. `row=1`.\n7. 'L' -> `res[1]`. Final `res=[\"PA\", \"YAPL\", \"\"]`. Join to `\"PAYAPL\"`.",
+    "test_cases": "- `numRows = 1`.\n- `numRows` is greater than or equal to the string length.\n- Empty input string.",
+    "raw_solution": "class Solution:\n    def convert(self, s: str, numRows: int) -> str:\n        if numRows == 1 or numRows >= len(s):\n            return s\n        res = [\"\"] * numRows\n        row = 0\n        direction = 1\n        for char in s:\n            res[row] += char\n            if row == 0:\n                direction = 1\n            elif row == numRows - 1:\n                direction = -1\n            row += direction\n        return \"\".join(res)",
+    "commented_solution": "class Solution:\n    def convert(self, s: str, numRows: int) -> str:\n        # If one row, or enough rows for every char, string doesn't change.\n        if numRows == 1 or numRows >= len(s):\n            return s\n\n        # Create a list of empty strings, one for each row.\n        res = [\"\"] * numRows\n        row = 0\n        # Direction controls whether we're moving down (1) or up (-1).\n        direction = 1\n        \n        for char in s:\n            res[row] += char\n            \n            # If we're at the top or bottom, reverse direction.\n            if row == 0:\n                direction = 1\n            elif row == numRows - 1:\n                direction = -1\n            \n            row += direction\n            \n        return \"\".join(res)"
+  },
+  {
+    "title": "Reverse Integer",
+    "link": "https://leetcode.com/problems/reverse-integer/",
+    "keywords": [
+      "#Math",
+      "#IntegerOverflow"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(log10(x))",
+        "justification": "The number of iterations is equal to the number of digits in the integer x, which is proportional to log base 10 of x."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The solution uses a fixed number of variables to perform the reversal, regardless of the size of the input integer."
+      }
+    },
+    "whiteboard": "The core of this problem is handling potential 32-bit integer overflow. The best approach is purely mathematical, avoiding string conversion. We can build the reversed integer digit by digit using the modulo (`%`) and division (`//`) operators. In each step, before we multiply our result by 10 and add the new digit, we must check if this operation would push the result beyond `INT_MAX` or `INT_MIN`. This pre-emptive check is the key to a correct solution.",
+    "dry_run": "Example: `x = 123`\n1. `rev = 0`.\n2. Loop 1: `digit = 3`, `rev = 3`, `x = 12`.\n3. Loop 2: `digit = 2`, `rev = 32`, `x = 1`.\n4. Loop 3: `digit = 1`, `rev = 321`, `x = 0`.\n5. Loop ends. Return `321`.",
+    "test_cases": "- Positive and negative integers.\n- Numbers ending in zero (e.g., `120`).\n- `x = 0`.\n- Numbers that will cause overflow when reversed (e.g., `1534236469`).\n- `INT_MIN` and `INT_MAX` themselves.",
+    "raw_solution": "class Solution:\n    def reverse(self, x: int) -> int:\n        INT_MIN, INT_MAX = -2**31, 2**31 - 1\n        rev = 0\n        sign = 1 if x >= 0 else -1\n        x = abs(x)\n        while x != 0:\n            digit = x % 10\n            if rev > INT_MAX // 10 or (rev == INT_MAX // 10 and digit > 7):\n                return 0\n            if rev < INT_MIN // 10 or (rev == INT_MIN // 10 and digit < -8):\n                return 0\n            rev = rev * 10 + digit\n            x //= 10\n        return rev * sign",
+    "commented_solution": "class Solution:\n    def reverse(self, x: int) -> int:\n        INT_MIN, INT_MAX = -2**31, 2**31 - 1\n        rev = 0\n        sign = 1 if x >= 0 else -1\n        x = abs(x)\n\n        while x != 0:\n            digit = x % 10\n            \n            # CRITICAL: Check for potential overflow BEFORE making the change.\n            if rev > INT_MAX // 10 or (rev == INT_MAX // 10 and digit > 7):\n                return 0\n            \n            rev = rev * 10 + digit\n            x //= 10\n            \n        return rev * sign"
+  },
+  {
+    "title": "String to Integer (atoi)",
+    "link": "https://leetcode.com/problems/string-to-integer-atoi/",
+    "keywords": [
+      "#String",
+      "#EdgeCases",
+      "#FiniteStateMachine"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "We perform a single pass over the input string of length N to parse the integer."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "We only use a few variables to keep track of the parsing state. The space required does not scale with the input string length."
+      }
+    },
+    "whiteboard": "This problem tests meticulous handling of edge cases. It can be modeled as a finite state machine. The best approach is a manual, state-based parse: 1. Skip leading whitespace. 2. Check for an optional sign ('+' or '-'). 3. Read consecutive digits, building the number. 4. Stop at the first non-digit character. During step 3, it is crucial to check for integer overflow *before* adding the next digit. Finally, clamp the result to the 32-bit signed integer range.",
+    "dry_run": "Example: `s = \"   -42\"`\n1. Skip 3 spaces. `i=3`.\n2. Read sign. `s[3]` is '-'. `sign = -1`. `i=4`.\n3. Read digits. `s[4]` is '4'. `res=4`. `i=5`. `s[5]` is '2'. `res=42`. `i=6`.\n4. `s[6]` is end of string. Loop terminates.\n5. Apply sign: `res = -42`. Return -42.",
+    "test_cases": "- Leading/trailing whitespace.\n- Presence of '+' or '-' sign.\n- Strings with letters before or after numbers (e.g., 'words and 987').\n- Overflow and underflow cases.\n- Empty string or string with only whitespace.",
+    "raw_solution": "class Solution:\n    def myAtoi(self, s: str) -> int:\n        INT_MIN, INT_MAX = -2**31, 2**31 - 1\n        i, n = 0, len(s)\n        while i < n and s[i] == ' ':\n            i += 1\n        sign = 1\n        if i < n and (s[i] == '+' or s[i] == '-'):\n            if s[i] == '-':\n                sign = -1\n            i += 1\n        res = 0\n        while i < n and s[i].isdigit():\n            digit = int(s[i])\n            if res > INT_MAX // 10 or (res == INT_MAX // 10 and digit > 7):\n                return INT_MAX if sign == 1 else INT_MIN\n            res = res * 10 + digit\n            i += 1\n        return sign * res",
+    "commented_solution": "class Solution:\n    def myAtoi(self, s: str) -> int:\n        INT_MIN, INT_MAX = -2**31, 2**31 - 1\n        i, n = 0, len(s)\n        \n        # 1. Skip leading whitespace\n        while i < n and s[i] == ' ':\n            i += 1\n            \n        # 2. Determine sign\n        sign = 1\n        if i < n and (s[i] == '+' or s[i] == '-'):\n            if s[i] == '-':\n                sign = -1\n            i += 1\n            \n        # 3. Read in digits until a non-digit is found\n        res = 0\n        while i < n and s[i].isdigit():\n            digit = int(s[i])\n            \n            # CRITICAL: Check for overflow before multiplication\n            if res > INT_MAX // 10 or (res == INT_MAX // 10 and digit > 7):\n                return INT_MAX if sign == 1 else INT_MIN\n                \n            res = res * 10 + digit\n            i += 1\n            \n        # 4. Apply sign and return\n        return sign * res"
+  },
+  {
+    "title": "Palindrome Number",
+    "link": "https://leetcode.com/problems/palindrome-number/",
+    "keywords": [
+      "#Math",
+      "#NoStringConversion"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(log10(x))",
+        "justification": "The mathematical approach iterates through roughly half the digits of the number x. The total number of digits is log10(x)."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "We only use a couple of variables to store the original number and the reversed half, requiring constant extra space."
+      }
+    },
+    "whiteboard": "While converting the number to a string and checking for equality with its reverse is simple, interviewers often ask for a solution without string conversion. The mathematical approach is more efficient in terms of space (O(1)). It involves reversing only the second half of the number and comparing it with the first half. This avoids potential integer overflow issues that can arise from reversing the entire number if it's very large.",
+    "dry_run": "Example: `x = 1221`\n1. `x` is positive and doesn't end in 0. OK.\n2. `reverted_half = 0`.\n3. Loop 1: `x=122`, `reverted_half=1`.\n4. Loop 2: `x=12`, `reverted_half=12`.\n5. Loop terminates as `x` is not > `reverted_half`.\n6. Compare `x == reverted_half` (`12 == 12`). It's true. Return `True`.",
+    "test_cases": "- Negative numbers (should return False).\n- `0` (should return True).\n- Numbers ending in zero, but not zero itself (e.g., 10, 120 - should return False).\n- Even and odd length palindromes.",
+    "raw_solution": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        if x < 0 or (x > 0 and x % 10 == 0):\n            return False\n        reverted_half = 0\n        while x > reverted_half:\n            reverted_half = reverted_half * 10 + x % 10\n            x //= 10\n        return x == reverted_half or x == reverted_half // 10",
+    "commented_solution": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        # A negative number cannot be a palindrome.\n        # Also, if a number ends in 0 (and is not 0), it cannot be a palindrome.\n        if x < 0 or (x > 0 and x % 10 == 0):\n            return False\n\n        reverted_half = 0\n        # We only need to revert the second half of the number.\n        while x > reverted_half:\n            reverted_half = reverted_half * 10 + x % 10\n            x //= 10\n\n        # For odd length numbers, the middle digit is irrelevant (e.g., 12321 -> x=12, rev=123).\n        # For even length, x will equal reverted_half.\n        return x == reverted_half or x == reverted_half // 10"
+  },
+  {
+    "title": "Regular Expression Matching",
+    "link": "https://leetcode.com/problems/regular-expression-matching/",
+    "keywords": [
+      "#String",
+      "#DynamicProgramming",
+      "#Recursion",
+      "#Regex",
+      "#Hard"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(S * P)",
+        "justification": "The dynamic programming solution fills a 2D table of size S x P, where S and P are the lengths of the string and pattern. Each cell calculation is a constant time operation."
+      },
+      "space": {
+        "notation": "O(S * P)",
+        "justification": "We create a DP table of size (S+1) x (P+1) to store the intermediate results of the matching process."
+      }
+    },
+    "whiteboard": "This is a hard problem best solved with Dynamic Programming. A 2D DP table, `dp[i][j]`, can store whether the first `i` characters of the string `s` match the first `j` characters of the pattern `p`. The state transitions depend on the character in the pattern. If it's a normal character or '.', the match depends on the previous characters `dp[i-1][j-1]`. If it's a '*', it introduces two possibilities: the '*' matches zero preceding elements (depending on `dp[i][j-2]`), or it matches one or more (depending on `dp[i-1][j]`).",
+    "dry_run": "Conceptual Dry Run: `s=\"aab\", p=\"c*a*b\"`.\n`dp[i][j]` = `s[:i]` matches `p[:j]`.\n`dp[0][0]` = True.\n`dp[0][2]` = True because `c*` can match an empty string.\n`dp[0][4]` = True because `c*a*` can match an empty string.\n`dp[1][4]` (`'a'` vs `'c*a*'`) = True because `a*` matches `'a'`. Depends on `dp[0][4]`.\n... work through the table until `dp[3][5]` is calculated.",
+    "test_cases": "- `.` matching any character.\n- `*` matching zero elements.\n- `*` matching multiple elements.\n- Complex patterns like `a.*b`.\n- Empty string or empty pattern.",
+    "raw_solution": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]\n        dp[0][0] = True\n        for j in range(1, len(p) + 1):\n            if p[j - 1] == '*':\n                dp[0][j] = dp[0][j - 2]\n        for i in range(1, len(s) + 1):\n            for j in range(1, len(p) + 1):\n                if p[j - 1] != '*':\n                    if dp[i - 1][j - 1] and (s[i - 1] == p[j - 1] or p[j - 1] == '.'):\n                        dp[i][j] = True\n                else:\n                    if dp[i][j - 2]:\n                        dp[i][j] = True\n                    elif dp[i - 1][j] and (s[i - 1] == p[j - 2] or p[j - 2] == '.'):\n                        dp[i][j] = True\n        return dp[len(s)][len(p)]",
+    "commented_solution": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        # DP table initialized to False. dp[i][j] = s[:i] matches p[:j]\n        dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]\n\n        # Base case: empty string matches empty pattern\n        dp[0][0] = True\n\n        # Handle patterns like \"a*\" that can match an empty string\n        for j in range(1, len(p) + 1):\n            if p[j - 1] == '*':\n                dp[0][j] = dp[0][j - 2]\n\n        # Fill the rest of the DP table\n        for i in range(1, len(s) + 1):\n            for j in range(1, len(p) + 1):\n                if p[j - 1] != '*':\n                    if dp[i - 1][j - 1] and (s[i - 1] == p[j - 1] or p[j - 1] == '.'):\n                        dp[i][j] = True\n                else:\n                    # Option A: '*' means zero occurrences\n                    if dp[i][j - 2]:\n                        dp[i][j] = True\n                    # Option B: '*' means one or more occurrences\n                    elif dp[i - 1][j] and (s[i - 1] == p[j - 2] or p[j - 2] == '.'):\n                        dp[i][j] = True\n\n        return dp[len(s)][len(p)]"
+  }
+]
+

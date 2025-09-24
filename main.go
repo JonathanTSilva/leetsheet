@@ -17,10 +17,11 @@ import (
 
 // ========= STYLES =========
 var (
-	docStyle          = lipgloss.NewStyle().Margin(0, 2)
-	inactivePaneStyle = lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("240"))
-	activePaneStyle   = lipgloss.NewStyle().Border(lipgloss.ThickBorder()).BorderForeground(lipgloss.Color("#AD58B4"))
-	paneTitleStyle    = lipgloss.NewStyle().Bold(true).Underline(true).MarginBottom(1).Foreground(lipgloss.Color("252"))
+	docStyle            = lipgloss.NewStyle().Margin(0, 2)
+	inactivePaneStyle   = lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("240"))
+	activePaneStyle     = lipgloss.NewStyle().Border(lipgloss.ThickBorder()).BorderForeground(lipgloss.Color("#AD58B4"))
+	paneTitleStyleFirst = lipgloss.NewStyle().Bold(true).Underline(true).Foreground(lipgloss.Color("252"))
+	paneTitleStyle      = lipgloss.NewStyle().Bold(true).Underline(true).MarginTop(1).Foreground(lipgloss.Color("252"))
 
 	titleStyle = func() lipgloss.Style {
 		b := lipgloss.RoundedBorder()
@@ -267,16 +268,18 @@ func (m *model) onWindowSizeChanged() {
 }
 func (m *model) setupViewports() {
 	paneWidth := m.leftViewport.Width - 4
-	wbTitle := paneTitleStyle.Render("Whiteboard")
+
+	wbTitle := paneTitleStyleFirst.Render(strings.ToUpper("Whiteboard"))
 	wbContent := m.activeProblem.Whiteboard
-	drTitle := paneTitleStyle.Render("Dry Run")
+	drTitle := paneTitleStyle.Render(strings.ToUpper("Dry Run"))
 	drContent := m.activeProblem.DryRun
-	rsTitle := paneTitleStyle.Render("Raw Solution")
+	rsTitle := paneTitleStyle.Render(strings.ToUpper("Raw Solution"))
 	rawSolutionCode, _ := m.glamour.Render(fmt.Sprintf("```python\n%s\n```", m.activeProblem.RawSolution))
-	tcTitle := paneTitleStyle.Render("Time Complexity")
+	tcTitle := paneTitleStyle.Render(strings.ToUpper("Time Complexity"))
 	tcContent := fmt.Sprintf("%s: %s", m.activeProblem.Complexity.Time.Notation, m.activeProblem.Complexity.Time.Justification)
-	scTitle := paneTitleStyle.Render("Space Complexity")
+	scTitle := paneTitleStyle.Render(strings.ToUpper("Space Complexity"))
 	scContent := fmt.Sprintf("%s: %s", m.activeProblem.Complexity.Space.Notation, m.activeProblem.Complexity.Space.Justification)
+
 	leftJoined := lipgloss.JoinVertical(lipgloss.Left,
 		wbTitle, wbContent,
 		drTitle, drContent,
@@ -287,8 +290,10 @@ func (m *model) setupViewports() {
 	leftFinal := lipgloss.NewStyle().Width(paneWidth).Render(leftJoined)
 	m.leftViewport.SetContent(leftFinal)
 	m.leftViewport.GotoTop()
-	csTitle := paneTitleStyle.Render("Commented Solution")
+
+	csTitle := paneTitleStyleFirst.Render(strings.ToUpper("Commented Solution"))
 	commentedSolutionCode, _ := m.glamour.Render(fmt.Sprintf("```python\n%s\n```", m.activeProblem.CommentedSolution))
+
 	rightJoined := lipgloss.JoinVertical(lipgloss.Left, csTitle, commentedSolutionCode)
 	rightFinal := lipgloss.NewStyle().Width(paneWidth).Render(rightJoined)
 	m.rightViewport.SetContent(rightFinal)

@@ -243,6 +243,249 @@
     "test_cases": "- `.` matching any character.\n- `*` matching zero elements.\n- `*` matching multiple elements.\n- Complex patterns like `a.*b`.\n- Empty string or empty pattern.",
     "raw_solution": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]\n        dp[0][0] = True\n        for j in range(1, len(p) + 1):\n            if p[j - 1] == '*':\n                dp[0][j] = dp[0][j - 2]\n        for i in range(1, len(s) + 1):\n            for j in range(1, len(p) + 1):\n                if p[j - 1] != '*':\n                    if dp[i - 1][j - 1] and (s[i - 1] == p[j - 1] or p[j - 1] == '.'):\n                        dp[i][j] = True\n                else:\n                    if dp[i][j - 2]:\n                        dp[i][j] = True\n                    elif dp[i - 1][j] and (s[i - 1] == p[j - 2] or p[j - 2] == '.'):\n                        dp[i][j] = True\n        return dp[len(s)][len(p)]",
     "commented_solution": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        # DP table initialized to False. dp[i][j] = s[:i] matches p[:j]\n        dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]\n\n        # Base case: empty string matches empty pattern\n        dp[0][0] = True\n\n        # Handle patterns like \"a*\" that can match an empty string\n        for j in range(1, len(p) + 1):\n            if p[j - 1] == '*':\n                dp[0][j] = dp[0][j - 2]\n\n        # Fill the rest of the DP table\n        for i in range(1, len(s) + 1):\n            for j in range(1, len(p) + 1):\n                if p[j - 1] != '*':\n                    if dp[i - 1][j - 1] and (s[i - 1] == p[j - 1] or p[j - 1] == '.'):\n                        dp[i][j] = True\n                else:\n                    # Option A: '*' means zero occurrences\n                    if dp[i][j - 2]:\n                        dp[i][j] = True\n                    # Option B: '*' means one or more occurrences\n                    elif dp[i - 1][j] and (s[i - 1] == p[j - 2] or p[j - 2] == '.'):\n                        dp[i][j] = True\n\n        return dp[len(s)][len(p)]"
+  },
+  {
+    "title": "Container With Most Water",
+    "link": "https://leetcode.com/problems/container-with-most-water",
+    "keywords": [
+      "#Array",
+      "#TwoPointers",
+      "#Greedy"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "We use a single pass with two pointers moving towards each other. Each pointer traverses the array exactly once, resulting in a linear time complexity."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The solution uses a constant amount of extra space for variables like `left`, `right`, and `mx`, regardless of the input array size."
+      }
+    },
+    "whiteboard": "This problem is optimally solved using a two-pointer approach, which is a greedy algorithm. We initialize two pointers, `left` at the beginning and `right` at the end of the array. The width of the container is `right - left`, and the height is limited by the shorter of the two lines (`min(height[left], height[right])`). We calculate this area and keep track of the maximum area found.\n\nThe core insight is how to move the pointers. To potentially find a larger area, we must increase either the width or the height. Since we start at maximum width, the only way to increase the area is by finding a greater height. If we move the pointer of the taller line inwards, the new height will be at best the same as the shorter line, but the width will have decreased, guaranteeing the area cannot be larger. Therefore, we must move the pointer of the shorter line inwards, as this is the only move that holds the potential to find a taller line and thus a larger area. This greedy choice guarantees we never miss the optimal solution. A brute-force approach of checking every pair of lines would be O(N^2), making this two-pointer solution far more efficient.",
+    "dry_run": "Example: `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]`\n1. `left = 0`, `right = 8`. `width = 8`. `height = min(h[0], h[8]) = min(1, 7) = 1`. `area = 8 * 1 = 8`. `mx = 8`. `h[left] < h[right]`, so `left++`.\n2. `left = 1`, `right = 8`. `width = 7`. `height = min(h[1], h[8]) = min(8, 7) = 7`. `area = 7 * 7 = 49`. `mx = 49`. `h[left] > h[right]`, so `right--`.\n3. `left = 1`, `right = 7`. `width = 6`. `height = min(h[1], h[7]) = min(8, 3) = 3`. `area = 6 * 3 = 18`. `mx` is still `49`. `h[left] > h[right]`, so `right--`.\n4. ... The process continues until `left >= right`. The final answer is `49`.",
+    "test_cases": "- Array where the tallest bars are at the ends.\n- Array where the tallest bars are in the middle.\n- Strictly increasing or decreasing array.\n- Array with only two elements.",
+    "raw_solution": "class Solution:\n    def maxArea(self, height):\n        left, right, mx = 0, len(height) - 1, 0\n        while left < right:\n            mx = max(mx, (right - left) * min(height[left], height[right]))\n            if height[left] < height[right]: \n                left += 1\n            else: \n                right -= 1\n        return mx",
+    "commented_solution": "class Solution:\n    def maxArea(self, height):\n        # Initialize pointers at both ends of the array and max_area to 0.\n        left, right, mx = 0, len(height) - 1, 0\n\n        # Loop until the pointers meet.\n        while left < right:\n            # Calculate the current area.\n            # Width is the distance between pointers.\n            # Height is limited by the shorter of the two lines.\n            current_area = (right - left) * min(height[left], height[right])\n            mx = max(mx, current_area)\n            \n            # FORYOU!!: Interviewer will ask for the logic behind which pointer to move.\n            # Answer: We move the pointer pointing to the shorter line because it's the limiting factor for the height. Moving the taller pointer would only decrease the width without any chance of increasing the height, thus guaranteeing a smaller area. Moving the shorter pointer gives us a chance to find a taller line, potentially leading to a larger area.\n            if height[left] < height[right]: \n                left += 1\n            else: \n                right -= 1\n        return mx"
+  },
+  {
+    "title": "Integer to Roman",
+    "link": "https://leetcode.com/problems/integer-to-roman",
+    "keywords": [
+      "#String",
+      "#Math",
+      "#Mapping",
+      "#Greedy"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(1)",
+        "justification": "The input integer is bounded (e.g., 1 to 3999). Therefore, the number of operations (divisions, modulo, string concatenations) is constant and does not scale with the magnitude of the input number."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The length of the resulting Roman numeral string is also bounded (e.g., 'MMMCMXCIX' is one of the longest). The space required does not grow with the input number's value."
+      }
+    },
+    "whiteboard": "The most robust and readable way to solve this is with a greedy mapping approach. We create a list of pairs, mapping integer values to their Roman numeral symbols, sorted in descending order. This list must include the subtractive cases (like 900 for 'CM', 400 for 'CD', etc.).\n\nWe iterate through this list. For each value-symbol pair, we check how many times the value can be 'subtracted' from our input number. We append the corresponding symbol that many times to our result string and then update the number using the modulo operator. Because the list is sorted from largest to smallest, we greedily build the Roman numeral correctly.\n\nThe provided solution works by manually handling each place value (thousands, hundreds, tens, ones) with complex conditional logic. While it gets the correct answer, the mapping approach is much cleaner, less error-prone, and easier to explain in an interview.",
+    "dry_run": "Example using the standard mapping method: `num = 58`\nMapping: `[(1000, 'M'), (900, 'CM'), ..., (50, 'L'), (40, 'XL'), (10, 'X'), ..., (1, 'I')]`\n1. `num = 58`. Check `1000`, `900`, ... down to `50`. `58 // 50 = 1`. Append 'L'. `num` becomes `8`.\n2. `num = 8`. Check `40`, `10`. `8 // 10 = 0`. ... `8 // 5 = 1`. Append 'V'. `num` becomes `3`.\n3. `num = 3`. Check `4`. `3 // 1 = 3`. Append 'I' three times. `num` becomes `0`.\n4. Loop ends. Final result: 'L' + 'V' + 'III' = 'LVIII'.",
+    "test_cases": "- A number with subtractive cases (e.g., 1994 -> MCMXCIV).\n- A number with no subtractive cases (e.g., 3888 -> MMMDCCCLXXXVIII).\n- Edge cases like 4, 9, 40, 90.\n- The maximum number, 3999.",
+    "raw_solution": "class Solution:\n    def intToRoman(self, num: int) -> str:\n        # A cleaner, more standard approach is preferred in interviews.\n        val_map = [\n            (1000, \"M\"), (900, \"CM\"), (500, \"D\"), (400, \"CD\"),\n            (100, \"C\"), (90, \"XC\"), (50, \"L\"), (40, \"XL\"),\n            (10, \"X\"), (9, \"IX\"), (5, \"V\"), (4, \"IV\"),\n            (1, \"I\")\n        ]\n        res = \"\"\n        for val, sym in val_map:\n            count = num // val\n            res += sym * count\n            num %= val\n        return res",
+    "commented_solution": "class Solution:\n    def intToRoman(self, num: int) -> str:\n        # FORYOU!!: This mapping approach is much cleaner and easier to explain than manual logic for each digit place. It's the standard, expected solution.\n        # The list must be sorted in descending order and include subtractive pairs (900, 400, 90, 4) to handle those cases greedily.\n        val_map = [\n            (1000, \"M\"), (900, \"CM\"), (500, \"D\"), (400, \"CD\"),\n            (100, \"C\"), (90, \"XC\"), (50, \"L\"), (40, \"XL\"),\n            (10, \"X\"), (9, \"IX\"), (5, \"V\"), (4, \"IV\"),\n            (1, \"I\")\n        ]\n        \n        # This will store our final Roman numeral string.\n        res = \"\"\n\n        # Greedily build the string from largest to smallest values.\n        for val, sym in val_map:\n            # See how many times this symbol fits into the remaining number.\n            count = num // val\n            \n            # Append the symbol that many times.\n            res += sym * count\n            \n            # Update the number to the remainder.\n            num %= val\n            \n        return res"
+  },
+  {
+    "title": "Roman to Integer",
+    "link": "https://leetcode.com/problems/roman-to-integer",
+    "keywords": [
+      "#String",
+      "#HashTable",
+      "#Mapping"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "The solution involves a single pass through the input string of length N. The hash map lookup is an O(1) operation."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "A hash map is used to store the values of the Roman numerals, but its size is constant (7 key-value pairs) and does not depend on the input string's length."
+      }
+    },
+    "whiteboard": "The key to this problem is understanding the subtractive rule in Roman numerals, where a smaller value preceding a larger one means subtraction (e.g., 'IV' is 4, not 6). A clever way to handle this is to iterate through the string from right to left.\n\nWe use a hash map to store the integer value of each Roman symbol for quick O(1) lookups. As we iterate from the end, we keep track of the value of the previously seen character. For the current character, if its value is less than the previous one, we subtract it from our total sum (this handles cases like 'I' in 'IV'). Otherwise, we add its value to the sum. This approach correctly accumulates the total by elegantly handling both additive and subtractive cases in a single pass.",
+    "dry_run": "Example: `s = \"MCMXCIV\"`\nMap: `{'I':1, 'V':5, 'X':10, 'C':100, 'M':1000}`\nIterate from right to left:\n1. `char = 'V'`. `pre_val = 1` (from 'I'). `val(V) = 5 > 1`. `sum = 5 - 1 = 4`. `pre_val = 5`.\n2. `char = 'C'`. `pre_val = 5`. `val(C) = 100 > 5`. `sum = 4 + 100 = 104`. `pre_val = 100`.\n3. `char = 'X'`. `pre_val = 100`. `val(X) = 10 < 100`. `sum = 104 - 10 = 94`. `pre_val = 10`.\n4. `char = 'M'`. `pre_val = 10`. `val(M) = 1000 > 10`. `sum = 94 + 1000 = 1094`. `pre_val = 1000`.\n5. `char = 'C'`. `pre_val = 1000`. `val(C) = 100 < 1000`. `sum = 1094 - 100 = 994`. `pre_val = 100`.\n6. `char = 'M'`. `pre_val = 100`. `val(M) = 1000 > 100`. `sum = 994 + 1000 = 1994`. `pre_val = 1000`.\nFinal result: `1994`.",
+    "test_cases": "- Simple additive case (e.g., 'LVIII').\n- Simple subtractive case (e.g., 'IV').\n- Complex case with multiple subtractions (e.g., 'MCMXCIV').\n- Single character input (e.g., 'X').",
+    "raw_solution": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        table = {\"M\": 1000, \"D\": 500, \"C\": 100, \"L\": 50, \"X\": 10, \"V\": 5, \"I\": 1}\n        sm, pre_val = 0, 0\n        for c in s[::-1]:\n            cur_val = table[c]\n            if cur_val < pre_val:\n                sm -= cur_val\n            else:\n                sm += cur_val\n            pre_val = cur_val\n        return sm",
+    "commented_solution": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        # Hash map for O(1) value lookups.\n        table = {\"M\": 1000, \"D\": 500, \"C\": 100, \"L\": 50, \"X\": 10, \"V\": 5, \"I\": 1}\n        \n        sm = 0\n        pre_val = 0\n\n        # FORYOU!!: Explain why iterating from right-to-left is a good strategy.\n        # Answer: It simplifies handling the subtractive rule. When we see a character, we only need to compare it with the one immediately to its right (which we've already processed). If the current character is smaller, we know it's a subtraction. This avoids complex lookaheads.\n        for c in s[::-1]: \n            cur_val = table[c]\n            # If the current value is less than the previous (value to its right),\n            # it's a subtractive case like 'IV' (1 before 5) or 'IX' (1 before 10).\n            if cur_val < pre_val:\n                sm -= cur_val\n            else:\n                # Otherwise, it's an additive case.\n                sm += cur_val\n            # Update the previous value for the next iteration.\n            pre_val = cur_val\n            \n        return sm"
+  },
+  {
+    "title": "Longest Common Prefix",
+    "link": "https://leetcode.com/problems/longest-common-prefix",
+    "keywords": [
+      "#String",
+      "#Array",
+      "#VerticalScanning"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(S)",
+        "justification": "Where S is the total number of characters in all strings. In the worst-case scenario (all strings are identical), we must check every character. This can also be expressed as O(N * M), where N is the number of strings and M is the length of the shortest string."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The algorithm uses a constant amount of extra space. The result is a substring of the first input string, which doesn't count as extra space proportional to the input size."
+      }
+    },
+    "whiteboard": "There are several ways to approach this, but one of the most efficient and straightforward is 'Vertical Scanning'. We imagine the strings arranged in a grid and scan downwards column by column.\n\nWe iterate with an index `j` from `0` to the length of the first string. In each iteration, we check if the character `strs[0][j]` is the same for all other strings at that same index `j`. If we find a mismatch or if any string is shorter than index `j`, we know the common prefix ends at the previous character. We can then return the slice of the first string up to index `j`.\n\nAn alternative is sorting the array of strings first. The longest common prefix of all strings will be the common prefix between the very first and very last strings in the sorted list. This is because sorting groups strings lexicographically, so the most different strings will be at the extremes.",
+    "dry_run": "Example: `s = [\"flower\", \"flow\", \"flight\"]`\n1. `j = 0`. Character is 'f'. 'f' is at index 0 in all strings. OK. `j` becomes `1`.\n2. `j = 1`. Character is 'l'. 'l' is at index 1 in all strings. OK. `j` becomes `2`.\n3. `j = 2`. Character is 'o'. 'o' is at index 2 in \"flower\" and \"flow\", but \"flight\" has 'i'. Mismatch.\n4. The loop terminates. The common prefix is the part of the first string up to index `j=2`. Return `s[0][:2]`, which is `\"fl\"`.",
+    "test_cases": "- An empty list of strings. Should return \"\".\n- A list with one string. Should return the string itself.\n- All strings are identical.\n- No common prefix exists. Should return \"\".\n- List contains an empty string.",
+    "raw_solution": "class Solution:\n    def longestCommonPrefix(self, strs: list[str]) -> str:\n        if not strs:\n            return \"\"\n        \n        for j in range(len(strs[0])):\n            char = strs[0][j]\n            for i in range(1, len(strs)):\n                if j >= len(strs[i]) or strs[i][j] != char:\n                    return strs[0][:j]\n        return strs[0]",
+    "commented_solution": "class Solution:\n    def longestCommonPrefix(self, strs: list[str]) -> str:\n        # Handle the edge case of an empty input list.\n        if not strs:\n            return \"\"\n        \n        # FORYOU!!: This is the 'Vertical Scanning' approach. Be ready to explain it.\n        # Answer: We iterate through the characters of the first string (column by column) and for each character, we verify it against all other strings at the same position. This is efficient because it stops at the very first mismatch found.\n\n        # Loop through each character index of the first string.\n        for j in range(len(strs[0])):\n            char_to_match = strs[0][j]\n            \n            # Loop through the rest of the strings to compare.\n            for i in range(1, len(strs)):\n                # The two failure conditions:\n                # 1. The current string `strs[i]` is shorter than the prefix we're checking.\n                # 2. The character at index `j` does not match.\n                if j >= len(strs[i]) or strs[i][j] != char_to_match:\n                    # If we fail, the prefix is the first string up to the current index `j`.\n                    return strs[0][:j]\n\n        # If the outer loop completes, it means the entire first string is a common prefix.\n        return strs[0]"
+  },
+  {
+    "title": "3Sum",
+    "link": "https://leetcode.com/problems/3sum",
+    "keywords": [
+      "#Array",
+      "#TwoPointers",
+      "#Sorting"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N^2)",
+        "justification": "The initial sort of the array takes O(N log N). The main part of the algorithm is a loop that iterates through N elements, and inside it, a two-pointer approach that takes O(N) time. This results in a dominant time complexity of O(N^2)."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "The space complexity depends on the sorting algorithm used. A typical in-place quicksort uses O(log N) stack space, but can be O(N) in the worst case. The space for the result list can also be significant but is usually not counted as extra space. I'll state O(N) to be safe for sorting."
+      }
+    },
+    "whiteboard": "A brute-force solution would check every combination of three numbers, leading to an O(N^3) complexity, which is too slow. The key to an optimized solution is to first sort the input array. Sorting takes O(N log N) but enables a much faster search.\n\nAfter sorting, we iterate through the array with a single pointer `i`. For each `nums[i]`, we need to find two other numbers in the rest of the array (from `i+1` to the end) that sum up to `-nums[i]`. This sub-problem is now the classic 'Two Sum' on a sorted array.\n\nWe solve this sub-problem using two pointers, `l` (left) starting at `i+1` and `r` (right) starting at the end of the array. We calculate the sum `nums[i] + nums[l] + nums[r]`. \n- If the sum is less than zero, we need a larger value, so we increment `l`.\n- If the sum is greater than zero, we need a smaller value, so we decrement `r`.\n- If the sum is zero, we've found a triplet. We add it to our results and move both pointers to search for new pairs.\n\nA crucial step is to handle duplicates. After finding a valid triplet, we must advance our pointers past any subsequent identical elements to ensure each unique triplet is found only once. We also skip duplicates for the initial `i` pointer.",
+    "dry_run": "Example: `nums = [-1, 0, 1, 2, -1, -4]`\n1. Sort `nums`: `[-4, -1, -1, 0, 1, 2]`.\n2. `i = 0`, `nums[i] = -4`. `l=1`, `r=5`. Target sum is `4`. `(-1) + 2 = 1 < 4`, so `l++`. `(-1) + 2 = 1 < 4`, `l++`. `0 + 2 = 2 < 4`, `l++`. `1 + 2 = 3 < 4`, `l++`. `l` meets `r`. No solution for `i=0`.\n3. `i = 1`, `nums[i] = -1`. `l=2`, `r=5`. Target sum is `1`. `nums[l]+nums[r] = (-1) + 2 = 1`. Match! Found `[-1, -1, 2]`. Add to results. `l++`, `r--`.\n4. `l=3`, `r=4`. `nums[l]+nums[r] = 0 + 1 = 1`. Match! Found `[-1, 0, 1]`. Add to results. `l++`, `r--`. `l` meets `r`.\n5. `i = 2`, `nums[i] = -1`. This is a duplicate of the previous `i`, so we skip it.\n6. ... and so on. Final result: `[[-1, -1, 2], [-1, 0, 1]]`.",
+    "test_cases": "- Array with no solution.\n- Array with many duplicates and zeros.\n- Array where multiple solutions exist for a single `i`.\n- Array is already sorted.",
+    "raw_solution": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        nums.sort()\n        for i in range(len(nums) - 2):\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                s = nums[i] + nums[l] + nums[r]\n                if s < 0:\n                    l += 1\n                elif s > 0:\n                    r -= 1\n                else:\n                    res.append([nums[i], nums[l], nums[r]])\n                    while l < r and nums[l] == nums[l+1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r-1]:\n                        r -= 1\n                    l += 1\n                    r -= 1\n        return res",
+    "commented_solution": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        # FORYOU!!: The first and most critical step is sorting. Why?\n        # Answer: Sorting allows us to use the two-pointer technique. With a sorted array, we can intelligently move the left and right pointers inwards to find the target sum in O(N) time, which would be impossible in an unsorted array without using extra space (like a hash map).\n        nums.sort()\n\n        # Iterate through the array to pick the first number of the triplet.\n        for i in range(len(nums) - 2):\n            # Skip duplicate values for the first number to avoid duplicate triplets.\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n\n            # Use two pointers for the rest of the array.\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                s = nums[i] + nums[l] + nums[r]\n                if s < 0:\n                    # Sum is too small, need a larger number, so move left pointer right.\n                    l += 1\n                elif s > 0:\n                    # Sum is too big, need a smaller number, so move right pointer left.\n                    r -= 1\n                else:\n                    # Found a triplet!\n                    res.append([nums[i], nums[l], nums[r]])\n                    # Skip duplicates for the second and third numbers.\n                    while l < r and nums[l] == nums[l+1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r-1]:\n                        r -= 1\n                    # Move pointers to find the next unique pair.\n                    l += 1\n                    r -= 1\n        return res"
+  },
+  {
+    "title": "3Sum Closest",
+    "link": "https://leetcode.com/problems/3sum-closest",
+    "keywords": [
+      "#Array",
+      "#TwoPointers",
+      "#Sorting"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N^2)",
+        "justification": "Similar to 3Sum, the solution is dominated by the nested loop structure (a for loop and a two-pointer while loop) after an initial O(N log N) sort."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "Space is required for the sorting algorithm. Typically O(log N) for an in-place sort's recursion stack, but can be O(N) in worst-case scenarios."
+      }
+    },
+    "whiteboard": "This problem is a variation of 3Sum and uses the exact same core algorithm: sorting followed by a two-pointer approach. The key difference is the objective. Instead of finding a sum that exactly equals a target, we want to find a sum that is closest to it.\n\nWe initialize a variable, `closest_sum`, to a very large value. After sorting the array, we iterate through it with a pointer `i`. For each `nums[i]`, we use two pointers, `l` and `r`, to scan the rest of the array. We compute the `current_sum = nums[i] + nums[l] + nums[r]`.\n\nAt each step, we compare the absolute difference `|current_sum - target|` with our smallest difference found so far. If the new difference is smaller, we update our `closest_sum` to be the `current_sum`.\n\nThe logic for moving the pointers remains the same as in Two Sum: if `current_sum` is less than the `target`, we increment `l` to get a larger sum. If it's greater, we decrement `r` to get a smaller sum. If the sum is exactly the target, we have found the absolute closest sum and can return it immediately.",
+    "dry_run": "Example: `nums = [-1, 2, 1, -4]`, `target = 1`\n1. Sort `nums`: `[-4, -1, 1, 2]`.\n2. Initialize `diff = infinity`, `res = infinity`.\n3. `i = 0`, `nums[i] = -4`. `l=1`, `r=3`. `sum = -4 + (-1) + 2 = -3`. `| -3 - 1| = 4`. `diff = 4`, `res = -3`. `sum < target`, so `l++`.\n4. `i = 0`, `l=2`, `r=3`. `sum = -4 + 1 + 2 = -1`. `| -1 - 1| = 2`. `diff = 2`, `res = -1`. `sum < target`, so `l++`. `l` meets `r`.\n5. `i = 1`, `nums[i] = -1`. `l=2`, `r=3`. `sum = -1 + 1 + 2 = 2`. `|2 - 1| = 1`. `diff = 1`, `res = 2`. `sum > target`, so `r--`. `l` meets `r`.\n6. Loop finishes. The closest sum found was `2`.",
+    "test_cases": "- An exact match for the target exists.\n- All numbers are positive or all are negative.\n- The closest sum is smaller than the target.\n- The closest sum is larger than the target.\n- Array contains duplicates.",
+    "raw_solution": "class Solution:\n    def threeSumClosest(self, nums: list[int], target: int) -> int:\n        res = diff = float(\"inf\")\n        nums.sort()\n        for i in range(len(nums) - 2):\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                sm = nums[i] + nums[l] + nums[r]\n                if abs(sm - target) < diff:\n                    diff, res = abs(sm - target), sm\n                if sm < target:\n                    l += 1\n                elif sm > target:\n                    r -= 1\n                else:\n                    return res\n        return res",
+    "commented_solution": "class Solution:\n    def threeSumClosest(self, nums: list[int], target: int) -> int:\n        # Initialize diff to infinity and the result.\n        diff = float(\"inf\")\n        res = 0 # Will be updated on first iteration.\n\n        # FORYOU!!: Same as 3Sum, sorting is the crucial first step.\n        # Answer: It enables the O(N) two-pointer scan for each element, bringing the total complexity down from O(N^3) to O(N^2).\n        nums.sort()\n\n        for i in range(len(nums) - 2):\n            # Skip duplicates for the first element.\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                sm = nums[i] + nums[l] + nums[r]\n\n                # Check if this sum is closer than the best we've found so far.\n                if abs(sm - target) < diff:\n                    diff = abs(sm - target)\n                    res = sm\n\n                # Move pointers based on comparison with the target.\n                if sm < target:\n                    l += 1\n                elif sm > target:\n                    r -= 1\n                else:\n                    # If sum is exactly the target, this is the closest possible. Return immediately.\n                    return res\n        return res"
+  },
+  {
+    "title": "Letter Combinations of a Phone Number",
+    "link": "https://leetcode.com/problems/letter-combinations-of-a-phone-number",
+    "keywords": [
+      "#String",
+      "#Backtracking",
+      "#Recursion",
+      "#Iteration"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(4^N * N)",
+        "justification": "Where N is the length of the input digits string. For each digit, we have up to 4 choices (for '7' and '9'). This branching creates O(4^N) combinations. Each combination has a length of N, and creating it (e.g., via string concatenation) can take O(N) time, leading to the final complexity."
+      },
+      "space": {
+        "notation": "O(4^N * N)",
+        "justification": "The space is required to store the output. There are O(4^N) combinations, and each has length N. Additionally, the recursion stack for a backtracking solution would go N levels deep, using O(N) space."
+      }
+    },
+    "whiteboard": "This is a classic backtracking problem. Backtracking is a recursive technique for solving problems by trying to build a solution incrementally, one piece at a time, and removing those solutions that fail to satisfy the constraints of the problem at any point in time.\n\nWe can define a recursive helper function, say `backtrack(index, current_string)`. The `index` tracks which digit we're currently processing, and `current_string` is the combination we've built so far.\nThe base case for the recursion is when `index` equals the length of the input digits. This means we've formed a complete combination, so we add `current_string` to our results list.\nIn the recursive step, we get the letters corresponding to the digit at the current `index`. We then loop through these letters. For each letter, we append it to `current_string` and make a recursive call for the next index: `backtrack(index + 1, current_string + letter)`.\n\nAn iterative solution using a queue (similar to Breadth-First Search) is also possible. You start with an empty string in the queue. For each digit, you dequeue all current combinations, append each possible new letter, and enqueue the new, longer combinations.",
+    "dry_run": "Example using backtracking: `digits = \"23\"`\n`backtrack(index, path)`\n1. Call `backtrack(0, \"\")`.\n2. `index=0`, `digit='2'`, letters are `'a', 'b', 'c'`.\n3. Loop 1: Call `backtrack(1, \"a\")`.\n   - `index=1`, `digit='3'`, letters are `'d', 'e', 'f'`.\n   - Loop 1.1: Call `backtrack(2, \"ad\")`. Base case hit (`index=2`). Add \"ad\" to results.\n   - Loop 1.2: Call `backtrack(2, \"ae\")`. Base case hit. Add \"ae\".\n   - Loop 1.3: Call `backtrack(2, \"af\")`. Base case hit. Add \"af\".\n   - Return from `backtrack(1, \"a\")`.\n4. Loop 2: Call `backtrack(1, \"b\")`.\n   - ... adds \"bd\", \"be\", \"bf\".\n5. Loop 3: Call `backtrack(1, \"c\")`.\n   - ... adds \"cd\", \"ce\", \"cf\".\n6. Final result: `[\"ad\", \"ae\", \"af\", \"bd\", \"be\", \"bf\", \"cd\", \"ce\", \"cf\"]`.",
+    "test_cases": "- Empty input string. Should return [].\n- Single digit input.\n- Input with digits that map to 3 letters and digits that map to 4 letters.",
+    "raw_solution": "class Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        \n        res = []\n        dic = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}\n        \n        def backtrack(index, path):\n            if index == len(digits):\n                res.append(path)\n                return\n            \n            letters = dic[digits[index]]\n            for letter in letters:\n                backtrack(index + 1, path + letter)\n        \n        backtrack(0, \"\")\n        return res",
+    "commented_solution": "class Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        # Handle the edge case of an empty input string.\n        if not digits:\n            return []\n        \n        res = []\n        dic = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}\n        \n        # FORYOU!!: Be prepared to explain the backtracking approach.\n        # Answer: Backtracking is a recursive algorithm that explores all possible solutions by building a candidate solution step-by-step. When a step leads to a dead end or an invalid solution, it \"backtracks\" to the previous step and tries a different path. Here, each recursive call explores adding one more letter to our combination.\n        def backtrack(index, path):\n            # Base Case: If our path is the same length as the input digits,\n            # we have formed a complete combination.\n            if index == len(digits):\n                res.append(path)\n                return\n            \n            # Recursive Step:\n            # Get the letters for the current digit.\n            letters = dic[digits[index]]\n            # Loop through the letters and make a recursive call for each one.\n            for letter in letters:\n                # The new path is the old path plus the new letter.\n                # The new index moves to the next digit.\n                backtrack(index + 1, path + letter)\n        \n        # Start the backtracking process from the first digit (index 0) with an empty path.\n        backtrack(0, \"\")\n        return res"
+  },
+  {
+    "title": "4Sum",
+    "link": "https://leetcode.com/problems/4sum",
+    "keywords": [
+      "#Array",
+      "#TwoPointers",
+      "#Sorting",
+      "#KSum"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N^3)",
+        "justification": "After an O(N log N) sort, we have three nested loops. Two explicit `for` loops to fix the first two numbers, and a third implicit loop from the two-pointer scan, which takes O(N) time. This results in a cubic time complexity."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "Space is primarily for the sorting algorithm's recursion stack (typically O(log N), worst-case O(N)). The result storage does not count towards auxiliary space complexity."
+      }
+    },
+    "whiteboard": "This problem is a direct extension of 3Sum. The most effective approach is to reduce it to a series of 3Sum (or 2Sum) problems. First, as with all K-Sum problems, we sort the array.\n\nWe use two nested `for` loops to fix the first two numbers of the potential quadruplet, `nums[i]` and `nums[j]`. For each fixed pair, the problem is now reduced to finding two numbers in the rest of the array (`from j+1 to the end`) that sum to a new target: `target - nums[i] - nums[j]`. This is the classic 'Two Sum on a sorted array' problem, which we solve efficiently using the two-pointer technique (`l` and `r`).\n\nDuplicate handling is critical and more complex than in 3Sum. We need to skip duplicates for the `i` pointer, the `j` pointer, and also for the `l` and `r` pointers after a valid quadruplet is found. This ensures that each unique combination is added to the result list only once.",
+    "dry_run": "Example: `nums = [1, 0, -1, 0, -2, 2]`, `target = 0`\n1. Sort `nums`: `[-2, -1, 0, 0, 1, 2]`\n2. `i = 0`, `nums[i] = -2`.\n   - `j = 1`, `nums[j] = -1`. `new_target = 0 - (-2) - (-1) = 3`. Use two pointers on `[0, 0, 1, 2]`. `l=2, r=5`. `0+2=2 < 3`, `l++`. `0+2=2 < 3`, `l++`. `1+2=3`. Match! Found `[-2, -1, 1, 2]`. Add to results. `l++`, `r--`.\n3. `i = 0`, `nums[i] = -2`.\n   - `j = 2`, `nums[j] = 0`. `new_target = 0 - (-2) - 0 = 2`. Use two pointers on `[0, 1, 2]`. `l=3, r=5`. `0+2=2`. Match! Found `[-2, 0, 0, 2]`. Add to results.\n4. ... The process continues, skipping duplicates, until all combinations are checked. Final result could also include `[-1, 0, 0, 1]`.",
+    "test_cases": "- No solution exists.\n- Multiple solutions exist.\n- Array contains many duplicates, positive numbers, negative numbers, and zeros.\n- The target is a large positive or negative number.",
+    "raw_solution": "class Solution:\n    def fourSum(self, nums: list[int], target: int) -> list[list[int]]:\n        res = []\n        nums.sort()\n        for i in range(len(nums) - 3):\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n            for j in range(i + 1, len(nums) - 2):\n                if j > i + 1 and nums[j] == nums[j-1]:\n                    continue\n                l, r = j + 1, len(nums) - 1\n                while l < r:\n                    s = nums[i] + nums[j] + nums[l] + nums[r]\n                    if s < target:\n                        l += 1\n                    elif s > target:\n                        r -= 1\n                    else:\n                        res.append([nums[i], nums[j], nums[l], nums[r]])\n                        while l < r and nums[l] == nums[l+1]:\n                            l += 1\n                        while l < r and nums[r] == nums[r-1]:\n                            r -= 1\n                        l += 1\n                        r -= 1\n        return res",
+    "commented_solution": "class Solution:\n    def fourSum(self, nums: list[int], target: int) -> list[list[int]]:\n        res = []\n        # FORYOU!!: Explain how this problem can be generalized to K-Sum.\n        # Answer: You can write a recursive function, `kSum(nums, target, k)`. The base case is when k=2, where you solve it with the standard two-pointer approach. For k > 2, you iterate through the numbers, and for each number `n`, you recursively call `kSum` on the rest of the array with `target-n` and `k-1`. Sorting is required at the beginning, and duplicate handling is needed at each level of recursion.\n        nums.sort()\n\n        # First loop to fix the first number.\n        for i in range(len(nums) - 3):\n            # Skip duplicates for the first number.\n            if i > 0 and nums[i] == nums[i-1]:\n                continue\n            \n            # Second loop to fix the second number.\n            for j in range(i + 1, len(nums) - 2):\n                # Skip duplicates for the second number.\n                if j > i + 1 and nums[j] == nums[j-1]:\n                    continue\n\n                # Now we have a 2-Sum problem for the rest of the array.\n                l, r = j + 1, len(nums) - 1\n                while l < r:\n                    s = nums[i] + nums[j] + nums[l] + nums[r]\n                    if s < target:\n                        l += 1\n                    elif s > target:\n                        r -= 1\n                    else:\n                        res.append([nums[i], nums[j], nums[l], nums[r]])\n                        # Skip duplicates for the third and fourth numbers.\n                        while l < r and nums[l] == nums[l+1]:\n                            l += 1\n                        while l < r and nums[r] == nums[r-1]:\n                            r -= 1\n                        l += 1\n                        r -= 1\n        return res"
+  },
+  {
+    "title": "Remove Nth Node From End of List",
+    "link": "https://leetcode.com/problems/remove-nth-node-from-end-of-list",
+    "keywords": [
+      "#LinkedList",
+      "#TwoPointers",
+      "#DummyNode"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(L)",
+        "justification": "Where L is the length of the linked list. The algorithm requires a single pass through the list with two pointers."
+      },
+      "space": {
+        "notation": "O(1)",
+        "justification": "The optimal two-pointer solution uses a constant amount of extra space (for the two pointers and a dummy node)."
+      }
+    },
+    "whiteboard": "The most elegant solution to this problem uses the two-pointer technique. A naive approach might be to traverse the list once to find its length (L), then traverse it again `L-n` times to find the node to remove. The two-pointer method accomplishes this in a single pass.\n\nFirst, we introduce a `dummy` node that points to the head. This is a crucial trick that simplifies handling edge cases, like removing the actual head of the list.\n\nWe initialize two pointers, `fast` and `slow`, both starting at the `dummy` node. We first advance the `fast` pointer `n+1` steps ahead. The `+1` is so that the `slow` pointer will end up on the node *before* the one we want to delete.\n\nAfter this initial gap is created, we move both `fast` and `slow` pointers one step at a time until `fast` reaches the end of the list (i.e., `fast` is `None`). At this point, `slow` will be positioned exactly before the target node. We can then remove the target node by updating the `next` reference: `slow.next = slow.next.next`.\nFinally, we return `dummy.next`, which is the head of the modified list.",
+    "dry_run": "Example: `head = [1,2,3,4,5]`, `n = 2`\n1. Create `dummy` node: `dummy -> 1 -> 2 -> 3 -> 4 -> 5`.\n2. `fast` and `slow` start at `dummy`.\n3. Move `fast` `n+1 = 3` steps ahead. `fast` now points to node `3`. `slow` is still at `dummy`.\n   `slow`\n    ↓\n`dummy -> 1 -> 2 -> 3 -> 4 -> 5`\n                   ↑\n                 `fast`\n4. Now, move `fast` and `slow` together until `fast` reaches the end.\n   - `fast` -> `4`, `slow` -> `1`\n   - `fast` -> `5`, `slow` -> `2`\n   - `fast` -> `None`, `slow` -> `3`. Loop terminates.\n5. `slow` is pointing at node `3`. We need to remove the next node (node `4`).\n6. Execute `slow.next = slow.next.next`. This changes `3.next` from `4` to `5`.\n7. The list is now `dummy -> 1 -> 2 -> 3 -> 5`.\n8. Return `dummy.next`.",
+    "test_cases": "- Removing the head of the list (e.g., `n` = length of list).\n- Removing the tail of the list (e.g., `n = 1`).\n- List with only one node, and `n = 1`.\n- A long list.",
+    "raw_solution": "class Solution:\n    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:\n        dummy = ListNode(0, head)\n        slow = dummy\n        fast = dummy\n        \n        for _ in range(n + 1):\n            fast = fast.next\n            \n        while fast:\n            slow = slow.next\n            fast = fast.next\n            \n        slow.next = slow.next.next\n        return dummy.next",
+    "commented_solution": "class Solution:\n    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:\n        # FORYOU!!: Always mention using a dummy node and explain why.\n        # Answer: A dummy node simplifies edge cases, particularly when we need to remove the head of the list. Without it, we would need special conditional logic to handle the case where the node to be removed is the first one.\n        dummy = ListNode(0, head)\n        slow = dummy\n        fast = dummy\n        \n        # Advance the fast pointer to create a gap of 'n' nodes between fast and slow.\n        # We move it n+1 steps so that slow will land on the node *before* the target node.\n        for _ in range(n + 1):\n            fast = fast.next\n            \n        # Move both pointers simultaneously until the fast pointer reaches the end of the list.\n        while fast:\n            slow = slow.next\n            fast = fast.next\n            \n        # At this point, 'slow' is the node just before the one we want to remove.\n        # We bypass the target node to effectively delete it.\n        slow.next = slow.next.next\n        \n        # The dummy node's next pointer points to the head of the modified list.\n        return dummy.next"
+  },
+  {
+    "title": "Valid Parentheses",
+    "link": "https://leetcode.com/problems/valid-parentheses",
+    "keywords": [
+      "#String",
+      "#Stack",
+      "#HashTable"
+    ],
+    "complexity": {
+      "time": {
+        "notation": "O(N)",
+        "justification": "We iterate through the input string of length N exactly once. Stack push and pop operations are O(1)."
+      },
+      "space": {
+        "notation": "O(N)",
+        "justification": "In the worst-case scenario, the input string consists only of opening brackets (e.g., '((({{{'). In this case, the stack would grow to a size of N."
+      }
+    },
+    "whiteboard": "This problem is a perfect use case for a Stack data structure. The Last-In, First-Out (LIFO) nature of a stack mirrors how parentheses must be closed in the reverse order they are opened.\n\nThe algorithm is as follows:\n1. Initialize an empty stack.\n2. Create a hash map to store the matching pairs of brackets (e.g., `')': '('`). This allows for quick lookups.\n3. Iterate through each character of the input string.\n4. If the character is an opening bracket (`(`, `{`, `[`), push it onto the stack.\n5. If the character is a closing bracket (`)`, `}`, `]`), we check two conditions:\n   a. Is the stack empty? If so, we have a closing bracket with no corresponding opener, so the string is invalid.\n   b. Does the top element of the stack match the opening bracket for the current closing bracket? We pop from the stack and check. If they don't match, the string is invalid.\n6. After the loop finishes, if the stack is empty, it means every opening bracket was correctly matched and closed. If the stack is not empty, it means there are unclosed opening brackets.\n\nTherefore, the string is valid if and only if the stack is empty at the very end.",
+    "dry_run": "Example: `s = \"([)]\"`\n1. `char = '('`. It's an opener. Push `'('` onto the stack. Stack: `['(']`.\n2. `char = '['`. It's an opener. Push `'['` onto the stack. Stack: `['(', '[']`.\n3. `char = ')'`. It's a closer. Stack is not empty. Pop from stack: `'['`. Does `'['` match the opener for `')'`? No. Return `False`.",
+    "test_cases": "- An empty string (should be valid).\n- A valid simple string like `\"()[]{}\"`.\n- A valid nested string like `\"([{}])\"`.\n- An invalid string with wrong order like `\"([)]\"`.\n- An invalid string with unclosed brackets like `\"(((\"`.",
+    "raw_solution": "class Solution:\n    def isValid(self, s: str) -> bool:\n        stack = []\n        mapping = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        for char in s:\n            if char in mapping: # It's a closing bracket\n                top_element = stack.pop() if stack else '#'\n                if mapping[char] != top_element:\n                    return False\n            else: # It's an opening bracket\n                stack.append(char)\n        return not stack",
+    "commented_solution": "class Solution:\n    def isValid(self, s: str) -> bool:\n        # The stack will store the opening brackets we encounter.\n        stack = []\n\n        # FORYOU!!: Explain why a stack is the ideal data structure here.\n        # Answer: Parentheses follow a Last-In, First-Out (LIFO) rule. The last bracket that was opened must be the first one to be closed. A stack naturally models this LIFO behavior, making it the perfect tool for matching pairs.\n        \n        # This hash map provides an O(1) lookup for matching brackets.\n        mapping = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n\n        for char in s:\n            # If the character is a closing bracket...\n            if char in mapping:\n                # Pop from the stack if it's not empty, otherwise use a dummy value.\n                top_element = stack.pop() if stack else '#'\n                \n                # Check if the popped element is the corresponding opening bracket.\n                if mapping[char] != top_element:\n                    return False\n            else:\n                # If it's an opening bracket, push it onto the stack.\n                stack.append(char)\n        \n        # After the loop, the string is valid only if the stack is empty.\n        # A non-empty stack means there are unclosed opening brackets.\n        return not stack"
   }
 ]
 

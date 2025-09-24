@@ -15,7 +15,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// ========= STYLES =========
+// *========( STYLES )=========*
 var (
 	docStyle            = lipgloss.NewStyle().Margin(0, 2)
 	inactivePaneStyle   = lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("240"))
@@ -47,7 +47,7 @@ var (
 			MarginLeft(1)
 )
 
-// ========= DATA MODELS =========
+// *========( DATA MODELS )=========*
 type Problem struct {
 	ProblemTitle   string     `json:"title"`
 	Link           string     `json:"link"`
@@ -73,7 +73,7 @@ type ComplexityDetail struct {
 	Justification string `json:"justification"`
 }
 
-// ========= MAIN APP MODEL =========
+// *========( MAIN APP MODEL )=========*
 type viewState int
 type activePane int
 
@@ -138,7 +138,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.windowWidth = msg.Width
 		m.windowHeight = msg.Height
-		m.onWindowSizeChanged() // This line will now work correctly
+		m.onWindowSizeChanged()
 		m.ready = true
 	}
 	var cmd tea.Cmd
@@ -291,6 +291,8 @@ func (m *model) setupViewports() {
 	wbContent := m.activeProblem.Whiteboard
 	drTitle := paneTitleStyle.Render(strings.ToUpper("Dry Run"))
 	drContent := m.activeProblem.DryRun
+	ttTitle := paneTitleStyle.Render(strings.ToUpper("Test Cases"))
+	ttContent := m.activeProblem.TestCases
 	tcTitle := paneTitleStyle.Render(strings.ToUpper("Time Complexity"))
 	tcContent := fmt.Sprintf("%s: %s", m.activeProblem.Complexity.Time.Notation, m.activeProblem.Complexity.Time.Justification)
 	scTitle := paneTitleStyle.Render(strings.ToUpper("Space Complexity"))
@@ -298,6 +300,7 @@ func (m *model) setupViewports() {
 	leftJoined := lipgloss.JoinVertical(lipgloss.Left,
 		wbTitle, wbContent,
 		drTitle, drContent,
+		ttTitle, ttContent,
 		tcTitle, tcContent,
 		scTitle, scContent,
 	)

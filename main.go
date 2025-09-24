@@ -108,7 +108,9 @@ func newModel(problems []Problem) model {
 		items[i] = p
 	}
 	problemList := list.New(items, list.NewDefaultDelegate(), 0, 0)
-	problemList.Title = "LeetCode Problem Finder"
+	// problemList.SetShowTitle(false) // problemList.Title = "LeetCode Problem Finder"
+	problemList.Title = ""
+	problemList.Styles.Title = lipgloss.NewStyle()
 	problemList.SetShowHelp(false)
 	problemList.DisableQuitKeybindings()
 	problemList.FilterInput.Prompt = "Search: "
@@ -149,12 +151,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *model) updateSearchView(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 
+	// Store the previous filter value to detect changes
+	prevFilter := m.list.FilterValue()
+
 	// Let the list component handle its own state updates first.
 	m.list, cmd = m.list.Update(msg)
 
 	query := m.list.FilterValue()
 
-	if strings.HasPrefix(query, "#") {
+	// Check if the filter changed and starts with #
+	if strings.HasPrefix(query, "#") && query != prevFilter {
 		m.filterProblems(query)
 	}
 
@@ -218,6 +224,8 @@ func (m *model) filterProblems(query string) {
 	m.list.SetItems(filteredItems)
 	if len(filteredItems) > 0 {
 		m.list.Select(0)
+		// Force the list to refresh its visual state
+		m.list.Update(tea.KeyMsg{})
 	}
 }
 

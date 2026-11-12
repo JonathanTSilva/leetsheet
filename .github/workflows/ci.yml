@@ -33,6 +33,11 @@ jobs:
     with:
       public: true
 
+  go:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/go.yml
+
   # The one check the repository ruleset requires. Skipped jobs are fine.
   ci:
     name: ci
@@ -41,6 +46,7 @@ jobs:
       - hygiene
       - docs
       - security
+      - go
     runs-on: ubuntu-latest
     permissions: {}
     steps:

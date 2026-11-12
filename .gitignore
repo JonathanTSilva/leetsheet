@@ -1,0 +1,18 @@
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+.DS_Store
+Thumbs.db
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Claude Code local state
+.claude/settings.local.json
+CLAUDE.local.md

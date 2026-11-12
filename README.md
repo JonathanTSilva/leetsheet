@@ -1,28 +1,21 @@
 # leetsheet
 
-<div align="center">
-<br>
-<a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-<a href="#updating"><kbd> <br> Updating <br> </kbd></a>&ensp;&ensp;
-<a href="#themes"><kbd> <br> Themes <br> </kbd></a>&ensp;&ensp;
-<a href="#styles"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
-<a href="#keybindings"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
-<a href="CONTRIBUTING.md"><kbd> <br> Contributing <br> </kbd></a>&ensp;&ensp;
-</div><br><br>
+A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal.
 
-**A TUI-based LeetCode Cheatsheet for Quick Problem Walkthroughs in Your Terminal.**
+<!-- badges:start -->
+[![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)](https://www.repostatus.org/#active)
+[![CI](https://img.shields.io/github/actions/workflow/status/JonathanTSilva/leetsheet/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/JonathanTSilva/leetsheet/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/codespaces-open-181717?style=flat-square&logo=github)](https://codespaces.new/JonathanTSilva/leetsheet)
+<!-- badges:end -->
 
-`leetsheet` is a command-line application designed for developers who want a fast, offline, and focused way to review LeetCode problems. Instead of navigating browser tabs, get instant access to problem details, complexity analysis, whiteboard explanations, and multiple solution implementations directly in your terminal.
+## What it is
 
-## Demo
+`leetsheet` is a command-line application for developers who want a fast, offline way to review LeetCode problems. Instead of navigating browser tabs, you get problem details, complexity analysis, whiteboard explanations and multiple solution implementations directly in your terminal, from a local `problems.json` database of over 1200 problems.
 
-<p align="center"><img src="/assets/gif/demo.gif?raw=true"/></p>
+![leetsheet demo](assets/gif/demo.gif)
 
-## About The Project
-
-This isn't just another interview prep tool; it's a personal, offline-first, and blazingly fast cheatsheet. The goal is to minimize context switching and keep you in the "flow state" of your terminal. With a local JSON database of over 1200 problems, `leetsheet` provides a structured and comprehensive walkthrough for each, helping you internalize patterns and solutions without the distractions of the web.
-
-Key information for each problem includes:
+For each problem you get:
 
 - **Whiteboard Explanation:** The high-level strategy and data structures involved.
 - **Dry Run:** A step-by-step example to solidify understanding.
@@ -30,77 +23,37 @@ Key information for each problem includes:
 - **Complexity Analysis:** Time and Space complexity with clear justifications.
 - **Dual Solutions:** A manually crafted, commented solution and an AI-generated one for comparison.
 
-## Features
+Features:
 
 - **Instant Search:** Filter through problems by title as you type.
 - **Tag-Based Filtering:** Use `#tag` syntax (e.g., `#Array #HashTable`) to find problems by topic.
-- **Comprehensive Problem View:** A clean, two-pane layout displaying problem details on the left and code solutions on the right.
-- **Toggleable Solutions:** Instantly switch between the manually-written solution and an AI-generated one with the `c` key.
+- **Comprehensive Problem View:** A two-pane layout with problem details on the left and code solutions on the right.
+- **Toggleable Solutions:** Switch between the manual and AI-generated solution with the `c` key.
 - **Vim-like Keybindings:** Navigate lists and scroll content efficiently.
 - **Responsive TUI:** The layout adapts to your terminal window size.
-- **Syntax Highlighting:** Code solutions are beautifully highlighted for readability.
-  \-- **Offline First:** All data is read from a local `problems.json` file, making it available anywhere, anytime.
+- **Syntax Highlighting:** Code solutions are highlighted for readability.
+- **Offline First:** All data is read from a local `problems.json` file.
 
-## Installation
+## Quick start
 
-### Prerequisites
-
-You need to have Go (version 1.18 or newer) installed on your system.
+You need Go (version 1.25 or newer, see `go.mod`).
 
 ```bash
-# Check if Go is installed
-go version
-```
-
-### Steps
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/your-username/leetsheet.git
-    ```
-
-2.  **Navigate to the project directory:**
-
-    ```bash
-    cd leetsheet
-    ```
-
-3.  **Get the data:**
-    Ensure you have the `problems.json` file in the root of the project directory.
-
-4.  **Build the binary:**
-
-    ```bash
-    go build
-    ```
-
-    This will create an executable file named `leetsheet` in the current directory.
-
-5.  **(Optional) Add to your PATH:**
-    For easy access from anywhere, move the binary to a directory in your system's PATH.
-
-    ```bash
-    sudo mv leetsheet /usr/local/bin/
-    ```
-
-## Usage
-
-Simply run the executable from your terminal:
-
-```bash
+git clone https://github.com/JonathanTSilva/leetsheet.git
+cd leetsheet
+go build
 ./leetsheet
 ```
 
-If you moved it to your PATH, you can just run:
+`go build` creates an executable named `leetsheet` in the current directory and expects `problems.json` in the project root. To run it from anywhere, move the binary to a directory in your `PATH`:
 
 ```bash
-leetsheet
+sudo mv leetsheet /usr/local/bin/
 ```
 
-### Keybindings
+## Usage
 
-The application is fully keyboard-driven.
+Run `leetsheet` from your terminal. The application is fully keyboard-driven.
 
 | View        | Key             | Action                                |
 | ----------- | --------------- | ------------------------------------- |
@@ -116,13 +69,9 @@ The application is fully keyboard-driven.
 |             | `c`             | Toggle between Manual and IA solution |
 |             | `↑`/`↓`/`j`/`k` | Scroll the content in the active pane |
 
-## Adding New Problems
+### Adding new problems
 
-All problem data is stored in `problems.json`. To add a new problem, you need to append a new JSON object to the array in this file.
-
-### Data Structure
-
-Each problem object must follow this structure:
+All problem data is stored in `problems.json`. To add a problem, append a JSON object with this structure to the array in that file:
 
 ```json
 {
@@ -147,55 +96,30 @@ Each problem object must follow this structure:
 }
 ```
 
-### Utility Script for Code Formatting
+JSON requires strings to be escaped (newlines as `\n`, quotes as `\"`). The `code_to_json.py` utility script does this for you:
 
-JSON requires strings to be properly escaped (e.g., newlines as `\n`, quotes as `\"`). To make it easy to add new code solutions, you can use the provided `code_to_json.py` utility script.
+1. Optionally install `pyperclip` to copy the output to your clipboard automatically: `pip install pyperclip`.
+2. Open `code_to_json.py` and paste your multi-line code solution between the triple quotes.
+3. Run `python code_to_json.py`.
+4. Paste the printed single-line string as the value of `ia_solution` or `manual_solution` in `problems.json`.
 
-**Usage:**
+## Docs
 
-1.  **(Optional) Install `pyperclip` to automatically copy the output to your clipboard:**
+The repository layout and the engineering standard it follows are described in the [handbook](https://github.com/JonathanTSilva/.github/blob/main/handbook/README.md). Instructions for AI coding agents are in [AGENTS.md](AGENTS.md).
 
-    ```bash
-    pip install pyperclip
-    ```
+## Built with
 
-2.  **Paste your code:**
-    Open `code_to_json.py` and paste your multi-line code solution inside the triple quotes.
+- [Go](https://golang.org/): the core language.
+- [Bubble Tea](https://github.com/charmbracelet/bubbletea): the TUI framework.
+- [Lipgloss](https://github.com/charmbracelet/lipgloss): terminal layouts.
+- [Glamour](https://github.com/charmbracelet/glamour): Markdown and syntax-highlighted code rendering.
 
-    ```python
-    import json
-    import pyperclip
+Thanks to the team at [Charm](https://charm.sh/) for this suite of tools.
 
-    # Paste your code between the triple quotes
-    code = """class Solution:
-        def yourCode(self, s: str) -> int:
-            # Your implementation here
-            return 0
-    """
+## Contributing
 
-    # ... rest of the script
-    ```
-
-3.  **Run the script:**
-
-    ```bash
-    python code_to_json.py
-    ```
-
-4.  **Paste the output:**
-    The script will print a JSON-safe, single-line string. Paste this string as the value for `ia_solution` or `manual_solution` in your `problems.json` file. If `pyperclip` is installed, it will also be in your clipboard.
-
-## Built With
-
-- [Go](https://golang.org/) - The core language.
-- [Bubble Tea](https://github.com/charmbracelet/bubbletea) - The TUI framework that makes this possible.
-- [Lipgloss](https://github.com/charmbracelet/lipgloss) - For beautiful, stylish terminal layouts.
-- [Glamour](https://github.com/charmbracelet/glamour) - For rendering Markdown and syntax-highlighted code blocks.
+See the [contributing guide](https://github.com/JonathanTSilva/.github/blob/main/CONTRIBUTING.md). Branches are `<type>/<issue>-<slug>`, commits and PR titles follow Conventional Commits, and PRs are squash-merged.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## Acknowledgements
-
-A huge thank you to the team at [Charm](https://charm.sh/) for creating an amazing suite of tools for building beautiful TUIs.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.

@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier. Re-sync with `copier update`.
+_commit: v1.1.0
+_src_path: gh:JonathanTSilva/template-repo
+description: ➕ A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your
+    terminal
+has_release: false
+kind: product
+license: mit
+repo_name: leetsheet
+skeleton: false
+stack: none
+status: active
+visibility: public
+year: 2026
+

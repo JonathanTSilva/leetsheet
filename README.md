@@ -1,6 +1,9 @@
-# leetsheet
-
-A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal.
+<!-- brand:header:start -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/header-5fd7cb2c-dark.svg">
+  <img alt="leetsheet: A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal" src="assets/brand/header-5fd7cb2c-light.svg" width="100%">
+</picture>
+<!-- brand:header:end -->
 
 <!-- badges:start -->
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)](https://www.repostatus.org/#active)
@@ -126,3 +129,10 @@ See the [contributing guide](https://github.com/JonathanTSilva/.github/blob/main
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+<!-- brand:footer:start -->
+<p align="right"><a href="https://www.jontobias.com"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonathanTSilva/.github/main/assets/brand/jontobias-dark.svg">
+  <img alt="jontobias.com" src="https://raw.githubusercontent.com/JonathanTSilva/.github/main/assets/brand/jontobias-light.svg" width="200">
+</picture></a></p>
+<!-- brand:footer:end -->

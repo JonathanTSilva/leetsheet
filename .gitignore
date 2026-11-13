@@ -16,3 +16,8 @@ Thumbs.db
 # Claude Code local state
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Go
+bin/
+coverage.out
+*.test

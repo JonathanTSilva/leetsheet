@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -202,25 +201,10 @@ func (m *model) filterProblems(query string) {
 		return
 	}
 
-	separators := strings.NewReplacer(",", " ", ";", " ", "  ", " ")
-	searchStr = separators.Replace(searchStr)
-	searchKeywords := strings.Fields(strings.ToLower(searchStr))
+	searchKeywords := parseSearchKeywords(searchStr)
 
 	for _, prob := range m.allProblems {
-		problemKeywords := make(map[string]struct{})
-		for _, kw := range prob.Keywords {
-			problemKeywords[strings.ToLower(strings.TrimLeft(kw, "#"))] = struct{}{}
-		}
-
-		matchesAll := true
-		for _, searchKw := range searchKeywords {
-			if _, found := problemKeywords[searchKw]; !found {
-				matchesAll = false
-				break
-			}
-		}
-
-		if matchesAll {
+		if hasAllKeywords(prob, searchKeywords) {
 			filteredItems = append(filteredItems, prob)
 		}
 	}
@@ -231,6 +215,29 @@ func (m *model) filterProblems(query string) {
 		// Force the list to refresh its visual state
 		m.list.Update(tea.KeyMsg{})
 	}
+}
+
+// parseSearchKeywords splits a search string (with the leading "#" already
+// removed) into lowercase keywords, treating commas and semicolons as spaces.
+func parseSearchKeywords(searchStr string) []string {
+	separators := strings.NewReplacer(",", " ", ";", " ", "  ", " ")
+	return strings.Fields(strings.ToLower(separators.Replace(searchStr)))
+}
+
+// hasAllKeywords reports whether the problem carries every one of the given
+// lowercase keywords. Problem keywords are compared case-insensitively and
+// without their leading "#".
+func hasAllKeywords(p Problem, searchKeywords []string) bool {
+	problemKeywords := make(map[string]struct{}, len(p.Keywords))
+	for _, kw := range p.Keywords {
+		problemKeywords[strings.ToLower(strings.TrimLeft(kw, "#"))] = struct{}{}
+	}
+	for _, searchKw := range searchKeywords {
+		if _, found := problemKeywords[searchKw]; !found {
+			return false
+		}
+	}
+	return true
 }
 
 func (m *model) updateProblemView(msg tea.Msg) tea.Cmd {
@@ -395,16 +402,24 @@ func max(a, b int) int {
 	}
 	return b
 }
-func main() {
-	jsonFile, err := os.Open("problems.json")
+
+// loadProblems reads and parses a problems JSON file.
+func loadProblems(path string) ([]Problem, error) {
+	data, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatalf("Error opening problems.json: %v", err)
+		return nil, err
 	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
 	var problems []Problem
-	if err := json.Unmarshal(byteValue, &problems); err != nil {
-		log.Fatalf("Error unmarshalling JSON: %v", err)
+	if err := json.Unmarshal(data, &problems); err != nil {
+		return nil, fmt.Errorf("unmarshalling JSON: %w", err)
+	}
+	return problems, nil
+}
+
+func main() {
+	problems, err := loadProblems("problems.json")
+	if err != nil {
+		log.Fatalf("Error loading problems.json: %v", err)
 	}
 	p := tea.NewProgram(newModel(problems), tea.WithAltScreen(), tea.WithMouseCellMotion())
 	if err := p.Start(); err != nil {

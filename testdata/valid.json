@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Two Sum",
+    "link": "https://leetcode.com/problems/two-sum/",
+    "keywords": ["#Array", "#HashTable"],
+    "complexity": {
+      "time": {"notation": "O(N)", "justification": "One pass."},
+      "space": {"notation": "O(N)", "justification": "Hash map."}
+    },
+    "whiteboard": "Use a hash map.",
+    "dry_run": "nums = [2, 7]",
+    "test_cases": "[2,7], 9",
+    "ia_solution": "def f(): pass",
+    "manual_solution": "def g(): pass"
+  },
+  {
+    "title": "Valid Parentheses",
+    "link": "https://leetcode.com/problems/valid-parentheses/",
+    "keywords": ["#String", "#Stack"],
+    "complexity": {
+      "time": {"notation": "O(N)", "justification": "Single scan."},
+      "space": {"notation": "O(N)", "justification": "Stack."}
+    },
+    "whiteboard": "Push openers, pop on closers.",
+    "dry_run": "s = '()'",
+    "test_cases": "'()', true",
+    "ia_solution": "",
+    "manual_solution": ""
+  }
+]

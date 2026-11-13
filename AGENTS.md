@@ -7,7 +7,7 @@ Instructions for AI coding agents working in this repository. This file is the s
 leetsheet: ➕ A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal
 
 - Kind: `product`
-- Stack: no language stack
+- Stack: Go (gofmt, go vet, go test)
 - Visibility: public
 - Status: active
 - License: mit
@@ -15,6 +15,7 @@ leetsheet: ➕ A TUI-based LeetCode cheatsheet for quick problem walkthroughs in
 ## Setup
 
 ```sh
+go mod download
 pre-commit install --install-hooks
 ```
 
@@ -24,9 +25,9 @@ Or open the repository in a dev container or GitHub Codespaces, which runs the s
 
 | Task | Command |
 |---|---|
-| Lint and format | `pre-commit run --all-files` |
-
-This repository has no language stack, so there is no test command.
+| Test | `go test -race ./...` |
+| Lint | `go vet ./...` |
+| Format | `gofmt -w .` |
 
 CI runs the same checks through the shared workflows in [`.github`](https://github.com/JonathanTSilva/.github). The single required check is `ci`.
 

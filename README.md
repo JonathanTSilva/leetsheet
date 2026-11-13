@@ -5,6 +5,9 @@ A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal.
 <!-- badges:start -->
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)](https://www.repostatus.org/#active)
 [![CI](https://img.shields.io/github/actions/workflow/status/JonathanTSilva/leetsheet/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/JonathanTSilva/leetsheet/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/JonathanTSilva/leetsheet/graph/badge.svg)](https://codecov.io/gh/JonathanTSilva/leetsheet)
+[![Quality](https://sonarcloud.io/api/project_badges/measure?project=JonathanTSilva_leetsheet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=JonathanTSilva_leetsheet)
+[![Scorecard](https://img.shields.io/ossf-scorecard/github.com/JonathanTSilva/leetsheet?style=flat-square&label=scorecard)](https://scorecard.dev/viewer/?uri=github.com/JonathanTSilva/leetsheet)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/codespaces-open-181717?style=flat-square&logo=github)](https://codespaces.new/JonathanTSilva/leetsheet)
 <!-- badges:end -->

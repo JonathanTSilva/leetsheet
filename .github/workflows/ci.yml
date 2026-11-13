@@ -36,7 +36,19 @@ jobs:
   go:
     permissions:
       contents: read
-    uses: ./.github/workflows/go.yml
+    uses: JonathanTSilva/.github/.github/workflows/go.yml@v1
+
+  # Codecov through OIDC, public repos only. Never fails CI.
+  coverage:
+    needs: go
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    uses: JonathanTSilva/.github/.github/workflows/coverage.yml@v1
+    with:
+      artifact: go-coverage
+      flags: go
 
   # The one check the repository ruleset requires. Skipped jobs are fine.
   ci:
@@ -47,6 +59,7 @@ jobs:
       - docs
       - security
       - go
+      - coverage
     runs-on: ubuntu-latest
     permissions: {}
     steps:

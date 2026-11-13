@@ -5,13 +5,15 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.13"
-    }
+    },
+    "ghcr.io/devcontainers/features/go:1": {}
   },
-  "postCreateCommand": "pipx install pre-commit && pre-commit install --install-hooks",
+  "postCreateCommand": "pipx install pre-commit && go mod download && pre-commit install --install-hooks",
   "customizations": {
     "vscode": {
       "extensions": [
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "golang.go"
       ]
     }
   }

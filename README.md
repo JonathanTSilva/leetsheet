@@ -1,7 +1,7 @@
 <!-- brand:header:start -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/header-5fd7cb2c-dark.svg">
-  <img alt="leetsheet: A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal" src="assets/brand/header-5fd7cb2c-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/header-5a675ab2-dark.svg">
+  <img alt="leetsheet: A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your terminal" src="assets/brand/header-5a675ab2-light.svg" width="100%">
 </picture>
 <!-- brand:header:end -->
 

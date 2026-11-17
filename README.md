@@ -15,34 +15,40 @@
 [![Open in GitHub Codespaces](https://img.shields.io/badge/codespaces-open-181717?style=flat-square&logo=github)](https://codespaces.new/JonathanTSilva/leetsheet)
 <!-- badges:end -->
 
-## What it is
-
-`leetsheet` is a command-line application for developers who want a fast, offline way to review LeetCode problems. Instead of navigating browser tabs, you get problem details, complexity analysis, whiteboard explanations and multiple solution implementations directly in your terminal, from a local `problems.json` database of over 1200 problems.
+**Review LeetCode problems without opening a browser.** leetsheet is a fast, offline terminal app: search 1,158 problems, then read the strategy, a dry run, the edge cases, the complexity and two solutions side by side.
 
 ![leetsheet demo](assets/gif/demo.gif)
 
-For each problem you get:
+<p align="center">
+  <img src="assets/screenshots/search.png" alt="Filtering the problem list as you type, with the search term highlighted in each title and the tags under it" width="49%">
+  <img src="assets/screenshots/problem.png" alt="The problem view: whiteboard explanation and dry run on the left, the manual solution with syntax highlighting on the right" width="49%">
+</p>
 
-- **Whiteboard Explanation:** The high-level strategy and data structures involved.
-- **Dry Run:** A step-by-step example to solidify understanding.
-- **Test Cases:** Critical edge cases to consider.
-- **Complexity Analysis:** Time and Space complexity with clear justifications.
-- **Dual Solutions:** A manually crafted, commented solution and an AI-generated one for comparison.
+*Filter as you type (left), then read the whole walkthrough in two panes (right).*
 
-Features:
+## What it is
 
-- **Instant Search:** Filter through problems by title as you type.
-- **Tag-Based Filtering:** Use `#tag` syntax (e.g., `#Array #HashTable`) to find problems by topic.
-- **Comprehensive Problem View:** A two-pane layout with problem details on the left and code solutions on the right.
-- **Toggleable Solutions:** Switch between the manual and AI-generated solution with the `c` key.
-- **Vim-like Keybindings:** Navigate lists and scroll content efficiently.
-- **Responsive TUI:** The layout adapts to your terminal window size.
-- **Syntax Highlighting:** Code solutions are highlighted for readability.
-- **Offline First:** All data is read from a local `problems.json` file.
+A command-line application for developers who want a quick way to revise problems before an interview or a study session. Everything is read from a local database, so it needs no network.
+
+Every one of the 1,158 problems comes with:
+
+- **Whiteboard explanation:** the high-level strategy and the data structures involved.
+- **Dry run:** a step-by-step example to make it stick.
+- **Test cases:** the edge cases worth remembering.
+- **Complexity analysis:** time and space, each with a justification.
+- **Two solutions:** a hand-written, commented one and an AI-generated one, to compare.
+
+And the app around them:
+
+- **Instant search.** The list filters by title as you type.
+- **Tag filters.** Type `#Array #HashTable` to find problems by topic, across more than 500 tags.
+- **Two-pane problem view.** Details on the left, syntax-highlighted code on the right, with `c` to swap between the manual and AI solution.
+- **Vim-style keys and a responsive layout** that adapts to your terminal size.
+- **Offline first.** The whole database is compiled into the binary.
 
 ## Quick start
 
-You need Go (version 1.25 or newer, see `go.mod`).
+You need Go 1.25 or newer (see `go.mod`).
 
 ```bash
 git clone https://github.com/JonathanTSilva/leetsheet.git
@@ -51,11 +57,13 @@ go build
 ./leetsheet
 ```
 
-`go build` creates an executable named `leetsheet` in the current directory and expects `problems.json` in the project root. To run it from anywhere, move the binary to a directory in your `PATH`:
+The binary carries the problem database with it, so you can run it from any directory. To put it on your `PATH`:
 
 ```bash
 sudo mv leetsheet /usr/local/bin/
 ```
+
+If a `problems.json` exists in the directory you run it from, leetsheet uses that file instead of the bundled one. That is how you keep your own set of problems.
 
 ## Usage
 
@@ -77,7 +85,7 @@ Run `leetsheet` from your terminal. The application is fully keyboard-driven.
 
 ### Adding new problems
 
-All problem data is stored in `problems.json`. To add a problem, append a JSON object with this structure to the array in that file:
+All problem data is stored in `problems.json`. To add a problem, copy `problems.json` from this repository into the directory you run leetsheet from (or edit it in place if you run from the checkout), then append a JSON object with this structure to the array in that file:
 
 ```json
 {

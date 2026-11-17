@@ -1,4 +1,4 @@
-module leetsheet
+module github.com/JonathanTSilva/leetsheet
 
 go 1.25.1
 

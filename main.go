@@ -1,8 +1,11 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"strings"
@@ -403,12 +406,14 @@ func max(a, b int) int {
 	return b
 }
 
-// loadProblems reads and parses a problems JSON file.
-func loadProblems(path string) ([]Problem, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+// bundledProblems is the problems database compiled into the binary, so leetsheet runs
+// from any directory.
+//
+//go:embed problems.json
+var bundledProblems []byte
+
+// parseProblems decodes a problems JSON document.
+func parseProblems(data []byte) ([]Problem, error) {
 	var problems []Problem
 	if err := json.Unmarshal(data, &problems); err != nil {
 		return nil, fmt.Errorf("unmarshalling JSON: %w", err)
@@ -416,8 +421,28 @@ func loadProblems(path string) ([]Problem, error) {
 	return problems, nil
 }
 
+// loadProblems reads and parses a problems JSON file.
+func loadProblems(path string) ([]Problem, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return parseProblems(data)
+}
+
+// loadProblemsOrBundled prefers the problems file at path, so you can edit your own copy,
+// and falls back to the bundled database when that file does not exist. A file that exists
+// but cannot be read or parsed is an error, never a silent fallback.
+func loadProblemsOrBundled(path string) ([]Problem, error) {
+	problems, err := loadProblems(path)
+	if errors.Is(err, fs.ErrNotExist) {
+		return parseProblems(bundledProblems)
+	}
+	return problems, err
+}
+
 func main() {
-	problems, err := loadProblems("problems.json")
+	problems, err := loadProblemsOrBundled("problems.json")
 	if err != nil {
 		log.Fatalf("Error loading problems.json: %v", err)
 	}

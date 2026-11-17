@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -269,4 +270,36 @@ func TestInfoView(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLoadProblemsOrBundled(t *testing.T) {
+	t.Run("falls back to the bundled database when the file is missing", func(t *testing.T) {
+		problems, err := loadProblemsOrBundled(filepath.Join(t.TempDir(), "problems.json"))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(problems) < 1000 {
+			t.Errorf("bundled database has %d problems, want at least 1000", len(problems))
+		}
+	})
+
+	t.Run("prefers the file when it exists", func(t *testing.T) {
+		problems, err := loadProblemsOrBundled("testdata/valid.json")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		want, err := loadProblems("testdata/valid.json")
+		if err != nil {
+			t.Fatalf("loading fixture: %v", err)
+		}
+		if len(problems) != len(want) {
+			t.Errorf("got %d problems, want %d from the file", len(problems), len(want))
+		}
+	})
+
+	t.Run("does not hide a malformed file", func(t *testing.T) {
+		if _, err := loadProblemsOrBundled("testdata/malformed.json"); err == nil {
+			t.Error("expected an error for a malformed file, got nil")
+		}
+	})
 }

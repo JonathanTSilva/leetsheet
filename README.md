@@ -50,6 +50,15 @@ And the app around them:
 
 You need Go 1.25 or newer (see `go.mod`).
 
+Install it with one command:
+
+```bash
+go install github.com/JonathanTSilva/leetsheet@latest
+leetsheet
+```
+
+`go install` puts the binary in `$(go env GOPATH)/bin`, usually `~/go/bin`, so make sure that directory is on your `PATH`. Or build it from a clone:
+
 ```bash
 git clone https://github.com/JonathanTSilva/leetsheet.git
 cd leetsheet
@@ -57,7 +66,7 @@ go build
 ./leetsheet
 ```
 
-The binary carries the problem database with it, so you can run it from any directory. To put it on your `PATH`:
+The binary carries the problem database with it, so you can run it from any directory. To put a built binary on your `PATH`:
 
 ```bash
 sudo mv leetsheet /usr/local/bin/

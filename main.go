@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"os"
@@ -441,13 +442,20 @@ func loadProblemsOrBundled(path string) ([]Problem, error) {
 	return problems, err
 }
 
-func main() {
-	problems, err := loadProblemsOrBundled("problems.json")
+// run loads the problems database from path (falling back to the bundled one) and runs
+// the TUI on the given input and output until it quits.
+func run(in io.Reader, out io.Writer, path string) error {
+	problems, err := loadProblemsOrBundled(path)
 	if err != nil {
-		log.Fatalf("Error loading problems.json: %v", err)
+		return fmt.Errorf("loading %s: %w", path, err)
 	}
-	p := tea.NewProgram(newModel(problems), tea.WithAltScreen(), tea.WithMouseCellMotion())
-	if err := p.Start(); err != nil {
+	p := tea.NewProgram(newModel(problems), tea.WithInput(in), tea.WithOutput(out), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	_, err = p.Run()
+	return err
+}
+
+func main() {
+	if err := run(os.Stdin, os.Stdout, "problems.json"); err != nil {
 		log.Fatal(err)
 	}
 }

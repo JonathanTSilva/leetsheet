@@ -272,7 +272,7 @@ func TestHeaderViewNarrowWindow(t *testing.T) {
 func TestRun(t *testing.T) {
 	t.Run("quits on ctrl+c", func(t *testing.T) {
 		var out bytes.Buffer
-		if err := run(strings.NewReader("\x03"), &out, []string{"testdata/valid.json"}); err != nil {
+		if err := run(strings.NewReader("\x03"), &out, "testdata/valid.json"); err != nil {
 			t.Fatalf("run returned %v", err)
 		}
 		if out.Len() == 0 {
@@ -281,18 +281,18 @@ func TestRun(t *testing.T) {
 	})
 	t.Run("uses the bundled database when the default file is missing", func(t *testing.T) {
 		var out bytes.Buffer
-		if err := run(strings.NewReader("\x03"), &out, []string{t.TempDir() + "/missing.json"}); err != nil {
+		if err := run(strings.NewReader("\x03"), &out, t.TempDir()+"/missing.json"); err != nil {
 			t.Fatalf("run returned %v", err)
 		}
 	})
-	t.Run("default path", func(t *testing.T) {
+	t.Run("loads the repository problems file", func(t *testing.T) {
 		var out bytes.Buffer
-		if err := run(strings.NewReader("\x03"), &out, nil); err != nil {
+		if err := run(strings.NewReader("\x03"), &out, "problems.json"); err != nil {
 			t.Fatalf("run returned %v", err)
 		}
 	})
 	t.Run("reports a malformed problems file", func(t *testing.T) {
-		err := run(strings.NewReader(""), &bytes.Buffer{}, []string{"testdata/malformed.json"})
+		err := run(strings.NewReader(""), &bytes.Buffer{}, "testdata/malformed.json")
 		if err == nil || !strings.Contains(err.Error(), "testdata/malformed.json") {
 			t.Fatalf("error = %v, want one naming the file", err)
 		}

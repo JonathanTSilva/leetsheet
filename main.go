@@ -442,13 +442,9 @@ func loadProblemsOrBundled(path string) ([]Problem, error) {
 	return problems, err
 }
 
-// run loads the problems database (args[0] overrides the default "problems.json" path)
-// and runs the TUI on the given input and output until it quits.
-func run(in io.Reader, out io.Writer, args []string) error {
-	path := "problems.json"
-	if len(args) > 0 {
-		path = args[0]
-	}
+// run loads the problems database from path (falling back to the bundled one) and runs
+// the TUI on the given input and output until it quits.
+func run(in io.Reader, out io.Writer, path string) error {
 	problems, err := loadProblemsOrBundled(path)
 	if err != nil {
 		return fmt.Errorf("loading %s: %w", path, err)
@@ -459,7 +455,7 @@ func run(in io.Reader, out io.Writer, args []string) error {
 }
 
 func main() {
-	if err := run(os.Stdin, os.Stdout, os.Args[1:]); err != nil {
+	if err := run(os.Stdin, os.Stdout, "problems.json"); err != nil {
 		log.Fatal(err)
 	}
 }

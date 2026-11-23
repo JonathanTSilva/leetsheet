@@ -21,3 +21,6 @@ CLAUDE.local.md
 bin/
 coverage.out
 *.test
+
+# Built binary
+/leetsheet

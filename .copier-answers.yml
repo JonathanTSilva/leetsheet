@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier. Re-sync with `copier update`.
-_commit: v1.5.0
+_commit: v1.5.1
 _src_path: gh:JonathanTSilva/template-repo
 bench: false
 description: ➕ A TUI-based LeetCode cheatsheet for quick problem walkthroughs in your
@@ -18,4 +18,3 @@ stack: go
 status: active
 visibility: public
 year: 2026
-

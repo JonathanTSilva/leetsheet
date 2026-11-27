@@ -12,6 +12,7 @@
 [![Coverage](https://codecov.io/gh/JonathanTSilva/leetsheet/graph/badge.svg)](https://codecov.io/gh/JonathanTSilva/leetsheet)
 [![Quality](https://sonarcloud.io/api/project_badges/measure?project=JonathanTSilva_leetsheet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=JonathanTSilva_leetsheet)
 [![Scorecard](https://img.shields.io/ossf-scorecard/github.com/JonathanTSilva/leetsheet?style=flat-square&label=scorecard)](https://scorecard.dev/viewer/?uri=github.com/JonathanTSilva/leetsheet)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17154/badge)](https://www.bestpractices.dev/projects/17154)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/codespaces-open-181717?style=flat-square&logo=github)](https://codespaces.new/JonathanTSilva/leetsheet)
 <!-- badges:end -->
